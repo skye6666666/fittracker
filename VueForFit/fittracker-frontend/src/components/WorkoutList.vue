@@ -8,8 +8,56 @@
 
     <input type="date" v-model="selectedDate" />
 
+    <div style="margin-bottom: 10px;">
+        <button @click="selectedSummary = 'today'">
+            Today Summary
+        </button>
+        
+        <button @click="selectedSummary = 'muscle'">
+            Muscle Group
+        </button>
+    </div>
 
-    <div>
+    <div class="summary" v-if="selectedSummary === 'today'">
+        <h3>Today Summary</h3>
+        <p>
+            總訓練量：{{ totalVolume.toFixed(1) }} kg
+        </p>
+        <p>
+            總組數：{{ totalSets }}</p>
+        <p>
+            總次數：{{ totalReps }}
+        </p>
+        <p>
+            動作數：{{ exerciseCount }}
+        </p>
+    </div>
+
+    
+    <div v-if="selectedSummary === 'muscle'">
+        <h3>Muscle Group Summary</h3>
+        
+        <MuscleChart
+            :labels="chartLabels"
+            :data="chartData"
+        />
+        <div
+            v-for="[group, data] in muscleGroupSummary"
+            :key="group"
+        >
+        <h4>{{ group }}</h4>
+        <p>
+            總訓練量：{{ data.volume.toFixed(1) }}kg
+        </p>
+        <p>
+            動作數：{{ data.exerciseCount }}
+        </p>
+        <hr>
+        </div>
+    </div>  
+    
+
+    <div class="add-workout">
         <h3>Add Workout</h3>
         <select v-model="selectedMuscleGroup">
             <option value="">請選擇肌群</option>
@@ -23,7 +71,13 @@
             </option>
         </select>
         <select v-model.number="form.exerciseId">
-            <option value="">請選擇動作</option>
+            <option value="null"> 
+                {{
+                    selectedMuscleGroup
+                        ? "請選擇動作"
+                        : "請先選擇肌群"
+                }}
+            </option>
 
             <option
                 v-for="exercise in filteredExercises"
@@ -33,19 +87,21 @@
                 {{ exercise.description }}
             </option>
         </select>
+
         <div v-if="selectedExercise">
-        <p>
-            英文名稱：
-            {{ selectedExercise.name }}
-        </p>
+            <p>
+                英文名稱：
+                {{ selectedExercise.name }}
+            </p>
         </div>
+
         <input v-model.number="form.weight" placeholder="Weight(kg)" />
         <input v-model.number="form.reps" placeholder="Reps" />
         <input v-model.number="form.sets" placeholder="Sets" />
         <button @click="createWorkout">Add</button>
     </div>
 
-    <table border="1">
+    <table border="1" style="margin: 20px auto;">
       <thead>
       <tr>
         <th>Exercise</th>
@@ -127,12 +183,15 @@ import { ref, onMounted } from "vue";
 import http from "../api/http";
 import { computed } from "vue";
 import { watch } from "vue";
+import MuscleChart from './MuscleChart.vue'
 
 const workouts = ref([]);
 const exercises = ref([]);
 const selectedMuscleGroup = ref("")
 const selectedDate = ref("")
 const editingId = ref(null)
+const selectedSummary = ref('today') 
+// 'today' | 'muscle'
 
 const form = ref({
   exerciseId: null,
@@ -321,6 +380,88 @@ const cancelEdit = () => {
   }
 }
 
+const totalVolume = computed(() => {
+
+  return workouts.value.reduce(
+    (sum, workout) =>
+      sum +
+      workout.weight *
+      workout.reps *
+      workout.sets,
+    0
+  )
+
+})
+
+const totalSets = computed(() => {
+
+  return workouts.value.reduce(
+    (sum, workout) =>
+      sum + workout.sets,
+    0
+  )
+
+})
+
+const totalReps = computed(() => {
+
+  return workouts.value.reduce(
+    (sum, workout) =>
+      sum + workout.reps * workout.sets,
+    0
+  )
+
+})
+
+const exerciseCount = computed(() => {
+
+  return workouts.value.length
+
+})
+
+const muscleGroupSummary = computed(() => {
+
+  const summary = {}
+
+  workouts.value.forEach(workout => {
+
+    const group = workout.muscleGroup
+
+    if (!summary[group]) {
+
+      summary[group] = {
+        volume: 0,
+        exerciseCount: 0
+      }
+
+    }
+
+    summary[group].volume +=
+      workout.weight *
+      workout.reps *
+      workout.sets
+
+    summary[group].exerciseCount += 1
+
+  })
+
+    return Object.entries(summary)
+    .sort((a, b) =>
+      b[1].volume - a[1].volume
+    )
+
+})
+
+const chartLabels = computed(() =>
+  muscleGroupSummary.value.map(i => i[0])
+)
+
+const chartData = computed(() =>
+  muscleGroupSummary.value.map(i => i[1].volume)
+)
+
+
+
 onMounted(() => {
   selectedDate.value = new Date().toISOString().slice(0, 10)
   loadWorkouts();
@@ -331,3 +472,15 @@ watch(selectedDate, () => {
   loadWorkouts();
 });
 </script>
+
+<style>
+.add-workout select,
+.add-workout input,
+.add-workout button {
+    margin-right: 8px;
+}
+
+.fade {
+  transition: all 0.2s ease;
+}
+</style>
