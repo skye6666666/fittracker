@@ -1,0 +1,20 @@
+//POST http://localhost:8080/api/users/register
+//GET http://localhost:8080/api/test/protected
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUb21teUBnbWFpbC5jb20iLCJpYXQiOjE3ODA0NjQ5NDYsImV4cCI6MTc4MDQ2ODU0Nn0.0xMrBxwr4IvYOZ_S9rVs8yU_dbWi8YTj1LHRUQ1TkpY
+
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+ "email": "Tommy@gmail.com",
+  "password": "123456"
+}
+
+
+
+//{
+//  "username": "Tommy",
+//  "email": "Tommy@gmail.com",
+//  "password": "123456"
+//}
+

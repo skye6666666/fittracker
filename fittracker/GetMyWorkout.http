@@ -1,0 +1,2 @@
+GET http://localhost:8080/api/workouts/date?date=2026-06-04
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJpYXQiOjE3ODA2MzYzMjEsImV4cCI6MTc4MDYzOTkyMX0.v2xIX6AsZnkyJk-SWlS7nIpoQdyIzsXCzt7Kgai9KEs

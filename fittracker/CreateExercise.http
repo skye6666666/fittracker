@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/exercises
+Content-Type: application/json
+
+{
+  "name": "Pull Up",
+  "muscleGroup": "Back",
+  "description": "引體向上"
+}

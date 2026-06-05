@@ -1,0 +1,11 @@
+POST http://localhost:8080/api/workouts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJpYXQiOjE3ODA1NTk3NDIsImV4cCI6MTc4MDU2MzM0Mn0._cyhMawdGsKYeIbrsetbqrZHbZ8QB_kFVPhC-eyPT_g
+Content-Type: application/json
+
+{
+  "exerciseId": 11,
+  "weight": 86,
+  "reps": 12,
+  "sets": 4,
+  "workoutDate": "2026-06-04T21:00:00"
+}
