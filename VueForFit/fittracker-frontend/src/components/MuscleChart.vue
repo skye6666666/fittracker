@@ -41,18 +41,45 @@ const renderChart = async () => {
         {
           label: 'Training Volume (kg)',
           data: props.data || [],
-          backgroundColor: 'rgba(75, 192, 192, 0.5)'
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+          borderRadius: 8
         }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      
       plugins: {
         title: {
           display: true,
           text: '訓練部位與訓練量'
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    return (
+                        "Training Volume: " +
+                        context.raw.toLocaleString() +
+                        " kg"
+                    )
+                }
+            }
         }
-      }
+      },
+      scales: {
+            y: {
+                ticks: {
+                    callback: function(value) {
+                        if (value >= 1000) {
+                            return (value / 1000) + "k"
+                        }
+                        return value
+                    }
+                }
+            }
+        }
     }
   })
 }
@@ -68,6 +95,8 @@ watch(
   },
   { deep: true }
 )
+
+
 </script>
 
 <style scoped>

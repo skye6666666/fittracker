@@ -1,19 +1,62 @@
 <template>
-  <div>
-    <h1>My Workouts</h1>
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">My Workouts</h1>
 
-    <button @click="loadWorkouts">
+    <button class="btn btn-primary" @click="loadWorkouts">
       Refresh
     </button>
 
     <input type="date" v-model="selectedDate" />
 
+    <!--今日kpi暫定區------START------>
+    <!-- <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="text-muted">Workouts</div>
+                <h3>{{ workouts.length }}</h3>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="text-muted">Sets</div>
+                <h3>{{ totalSets }}</h3>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="text-muted">Reps</div>
+                <h3>{{ totalReps }}</h3>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="text-muted">Volume</div>
+                <h3>{{ totalVolume }} kg</h3>
+            </div>
+            </div>
+        </div>
+
+    </div> -->
+
+    <!--今日kpi暫定區------END-------->
+
     <div style="margin-bottom: 10px;">
-        <button @click="selectedSummary = 'today'">
+        <button class="btn btn-primary" @click="selectedSummary = 'today'">
             Today Summary
         </button>
         
-        <button @click="selectedSummary = 'muscle'">
+        <button class="btn btn-primary" @click="selectedSummary = 'muscle'">
             Muscle Group
         </button>
     </div>
@@ -21,7 +64,7 @@
     <div class="summary" v-if="selectedSummary === 'today'">
         <h3>Today Summary</h3>
         <p>
-            總訓練量：{{ totalVolume.toFixed(1) }} kg
+            總訓練量：{{ totalVolume }} kg
         </p>
         <p>
             總組數：{{ totalSets }}</p>
@@ -47,7 +90,7 @@
         >
         <h4>{{ group }}</h4>
         <p>
-            總訓練量：{{ data.volume.toFixed(1) }}kg
+            總訓練量：{{ data.volume }}kg
         </p>
         <p>
             動作數：{{ data.exerciseCount }}
@@ -55,51 +98,186 @@
         <hr>
         </div>
     </div>  
+
     
-
-    <div class="add-workout">
+    
+    <!--add-workout卡片化之前的版本-->
+    <!-- <div class="add-workout">
         <h3>Add Workout</h3>
-        <select v-model="selectedMuscleGroup">
-            <option value="">請選擇肌群</option>
 
-            <option
-                v-for="group in muscleGroups"
-                :key="group"
-                :value="group"
-            >
-                {{ group }}
-            </option>
-        </select>
-        <select v-model.number="form.exerciseId">
-            <option value="null"> 
-                {{
-                    selectedMuscleGroup
-                        ? "請選擇動作"
-                        : "請先選擇肌群"
-                }}
-            </option>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <select class="form-select" v-model="selectedMuscleGroup">
+                    <option value="">請選擇肌群</option>
 
-            <option
-                v-for="exercise in filteredExercises"
-                :key="exercise.id"
-                :value="exercise.id"
-            >
-                {{ exercise.description }}
-            </option>
-        </select>
+                    <option
+                        v-for="group in muscleGroups"
+                        :key="group"
+                        :value="group"
+                    >
+                        {{ group }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" v-model.number="form.exerciseId">
+                    <option value="null"> 
+                        {{
+                            selectedMuscleGroup
+                                ? "請選擇動作"
+                                : "請先選擇肌群"
+                        }}
+                    </option>
 
-        <div v-if="selectedExercise">
-            <p>
-                英文名稱：
-                {{ selectedExercise.name }}
-            </p>
+                    <option
+                        v-for="exercise in filteredExercises"
+                        :key="exercise.id"
+                        :value="exercise.id"
+                    >
+                        {{ exercise.description }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-center">
+                <span
+                    v-if="selectedExercise"
+                    class="badge bg-secondary fs-6"
+                >
+                    <strong>英文名稱：</strong>
+                    {{ selectedExercise.name }}
+                </span>
+            </div>
         </div>
 
-        <input v-model.number="form.weight" placeholder="Weight(kg)" />
-        <input v-model.number="form.reps" placeholder="Reps" />
-        <input v-model.number="form.sets" placeholder="Sets" />
-        <button @click="createWorkout">Add</button>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input class="form-control" v-model.number="form.weight" placeholder="Weight(kg)" />
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" v-model.number="form.reps" placeholder="Reps" />
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" v-model.number="form.sets" placeholder="Sets" />
+            </div>
+        </div>
+        <button class="btn btn-success" @click="createWorkout">Add</button>
+    </div> -->
+
+
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <!-- Header -->
+            <div class="card-header bg-primary text-white">
+                Add Workout
+            </div>
+
+            <div class="card-body">
+
+                <!-- Muscle Group + Exercise + Badge -->
+                <div class="row mb-3 g-3">
+
+                    <!-- Muscle Group -->
+                    <div class="col-md-4">
+                        <label class="form-label">Muscle Group</label>
+
+                        <select class="form-select" v-model="selectedMuscleGroup">
+                            <option value="">請選擇肌群</option>
+
+                            <option
+                                v-for="group in muscleGroups"
+                                :key="group"
+                                :value="group"
+                                >
+                                {{ group }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Exercise -->
+                    <div class="col-md-4">
+                        <label class="form-label">Exercise</label>
+
+                        <select class="form-select" v-model.number="form.exerciseId">
+                            <option value="null">
+                                {{
+                                    selectedMuscleGroup
+                                    ? "請選擇動作"
+                                    : "請先選擇肌群"
+                                }}
+                            </option>
+
+                            <option
+                                v-for="exercise in filteredExercises"
+                                :key="exercise.id"
+                                :value="exercise.id"
+                                >
+                                {{ exercise.description }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Selected Exercise Badge -->
+                    <div class="col-md-4 d-flex align-items-end">
+                        <span
+                            v-if="selectedExercise"
+                            class="badge bg-secondary fs-6 p-2"
+                        >
+                            <strong>英文名稱：</strong>
+                            {{ selectedExercise.name }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Input Row -->
+                <div class="row mb-3 g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Weight (kg)</label>
+                        <input
+                            class="form-control"
+                            v-model.number="form.weight"
+                            type="number"
+                            placeholder="Enter weight"
+                        />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Reps</label>
+                        <input
+                            class="form-control"
+                            v-model.number="form.reps"
+                            type="number"
+                            placeholder="Enter reps"
+                        />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Sets</label>
+                        <input
+                            class="form-control"
+                            v-model.number="form.sets"
+                            type="number"
+                            placeholder="Enter sets"
+                        />
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <div class="d-grid">
+                    <button
+                    class="btn btn-success btn-lg"
+                    @click="createWorkout"
+                    >
+                    Add Workout
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
+
+
 
     <table border="1" style="margin: 20px auto;">
       <thead>
@@ -152,21 +330,21 @@
 
         <td>
             <template v-if="editingId !== workout.id">
-                <button @click="startEdit(workout)">
+                <button class="btn btn-warning" @click="startEdit(workout)">
                     Edit
                 </button>
 
-                <button @click="deleteWorkout(workout.id)">
+                <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
                     Delete
                 </button>
             </template>
 
             <template v-else>
-                <button @click="saveEdit(workout.id)">
+                <button class="btn btn-success" @click="saveEdit(workout.id)">
                     Save
                 </button>
 
-                <button @click="cancelEdit">
+                <button class="btn btn-secondary" @click="cancelEdit">
                     Cancel
                 </button>
             </template>
@@ -459,6 +637,7 @@ const chartLabels = computed(() =>
 const chartData = computed(() =>
   muscleGroupSummary.value.map(i => i[1].volume)
 )
+
 
 
 
