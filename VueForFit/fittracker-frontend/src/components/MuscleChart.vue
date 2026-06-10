@@ -19,8 +19,11 @@ import {
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend)
 
+// const props = defineProps({
+//   labels: Array,
+//   data: Array
+// })
 const props = defineProps({
-  labels: Array,
   data: Array
 })
 
@@ -36,13 +39,15 @@ const renderChart = async () => {
   chartInstance = new Chart(chartCanvas.value, {
     type: 'bar',
     data: {
-      labels: props.labels || [],
+      labels: props.data.map(d => d.group),
       datasets: [
         {
           label: 'Training Volume (kg)',
-          data: props.data || [],
-          backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+          data: props.data.map(d => d.volume),
+        //   backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        //   hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(13, 66, 174, 0.7)',
+          hoverBackgroundColor: 'rgba(13, 66, 174, 1)',
           borderRadius: 8
         }
       ]
@@ -50,7 +55,7 @@ const renderChart = async () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      
+
       plugins: {
         title: {
           display: true,
@@ -59,11 +64,12 @@ const renderChart = async () => {
         tooltip: {
             callbacks: {
                 label: function(context) {
-                    return (
-                        "Training Volume: " +
-                        context.raw.toLocaleString() +
-                        " kg"
-                    )
+                    const data = props.data[context.dataIndex]
+                    
+                    return [
+                        `Volume: ${data.volume.toLocaleString()} kg`,
+                        `Exercises: ${data.exerciseCount}`
+                    ]
                 }
             }
         }

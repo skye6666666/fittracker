@@ -42,15 +42,20 @@ const login = async () => {
       response.data.token
     );
 
+    localStorage.setItem(
+    "email",
+    email.value
+    );
+
     alert("登入成功");
 
     console.log(response.data);
-    alert("準備跳轉")
+    //alert("準備跳轉")
     //router.push("/workouts")
     if (response.data.token) {
         router.push("/workouts")
     }
-    alert("已執行 router.push")
+    //alert("已執行 router.push")
 
   } catch (error) {
 

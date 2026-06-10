@@ -1,5 +1,6 @@
 package com.skye.fittracker.service;
 
+import com.skye.fittracker.dto.ProgressDto;
 import com.skye.fittracker.dto.WorkoutCreateRequest;
 import com.skye.fittracker.dto.WorkoutResponse;
 import com.skye.fittracker.dto.WorkoutUpdateRequest;
@@ -95,6 +96,19 @@ public class WorkoutService {
                 .findByUserIdAndWorkoutDateBetween(userId, start, end)
                 .stream()
                 .map(this::toResponse)
+                .toList();
+    }
+
+    public List<ProgressDto> getWorkoutProgess(Long userId, Long exerciseId) {
+
+        return workoutRepo
+                .findByUserIdAndExerciseIdOrderByWorkoutDateAsc(userId, exerciseId)
+                .stream()
+                .map(record ->
+                        new ProgressDto(
+                                record.getWorkoutDate(),
+                                record.getWeight())
+                )
                 .toList();
     }
 

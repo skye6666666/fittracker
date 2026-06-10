@@ -1,15 +1,35 @@
 <template>
   <div class="container mt-4">
-    <h1 class="text-center mb-4">My Workouts</h1>
+    <!--<h1 class="text-center mb-4">My Workouts</h1>-->
+    <div
+     class="d-flex justify-content-between align-items-center mb-4"
+     >
 
-    <button class="btn btn-primary" @click="loadWorkouts">
+        <div>
+            <h1 class="mb-0">My Workouts</h1>
+
+            <small class="text-muted">
+            Welcome, {{ userEmail }}
+            </small>
+        </div>
+
+        <button
+            class="btn btn-outline-danger"
+            @click="logout"
+        >
+            Logout
+        </button>
+
+    </div>
+
+    <button class="btn btn-primary me-1 mb-2" @click="loadWorkouts">
       Refresh
     </button>
 
     <input type="date" v-model="selectedDate" />
 
     <!--今日kpi暫定區------START------>
-    <!-- <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4">
 
         <div class="col-md-3">
             <div class="card shadow-sm">
@@ -47,11 +67,12 @@
             </div>
         </div>
 
-    </div> -->
+    </div>
 
     <!--今日kpi暫定區------END-------->
 
-    <div style="margin-bottom: 10px;">
+    <!--舊按鈕-->
+    <!-- <div style="margin-bottom: 10px;">
         <button class="btn btn-primary" @click="selectedSummary = 'today'">
             Today Summary
         </button>
@@ -59,9 +80,27 @@
         <button class="btn btn-primary" @click="selectedSummary = 'muscle'">
             Muscle Group
         </button>
+    </div> -->
+
+    <div class="btn-group mb-3">
+        <button
+            class="btn"
+            :class="selectedSummary === 'today' ? 'btn-primary' : 'btn-outline-primary'"
+            @click="selectedSummary = 'today'"
+        >
+            Today Summary
+        </button>
+
+        <button
+            class="btn"
+            :class="selectedSummary === 'muscle' ? 'btn-primary' : 'btn-outline-primary'"
+            @click="selectedSummary = 'muscle'"
+        >
+            Muscle Group
+        </button>
     </div>
 
-    <div class="summary" v-if="selectedSummary === 'today'">
+    <!-- <div class="summary" v-if="selectedSummary === 'today'">
         <h3>Today Summary</h3>
         <p>
             總訓練量：{{ totalVolume }} kg
@@ -74,6 +113,33 @@
         <p>
             動作數：{{ exerciseCount }}
         </p>
+    </div> -->
+    <div class="card shadow-sm mb-4" v-if="selectedSummary === 'today'">
+        <div class="card-header bg-primary text-white">
+            Insight Panel
+        </div>
+
+        <div class="card-body">
+
+            <h5>🔥 Muscle Ranking</h5>
+
+            <div v-for="[group, data] in muscleGroupSummary" :key="group">
+            <div class="d-flex justify-content-between">
+                <span>{{ group }}</span>
+                <strong>{{ data.volume }} kg</strong>
+            </div>
+            </div>
+
+            <hr>
+
+            <h5>📊 Quick Insight</h5>
+
+            <p>
+            Most trained muscle:
+            <strong>{{ topMuscle }}</strong>
+            </p>
+
+        </div>
     </div>
 
     
@@ -84,7 +150,7 @@
             :labels="chartLabels"
             :data="chartData"
         />
-        <div
+        <!-- <div
             v-for="[group, data] in muscleGroupSummary"
             :key="group"
         >
@@ -96,7 +162,7 @@
             動作數：{{ data.exerciseCount }}
         </p>
         <hr>
-        </div>
+        </div> -->
     </div>  
 
     
@@ -166,10 +232,13 @@
 
 
     <div class="container mt-4">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
             <!-- Header -->
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-secondary text-white">
                 Add Workout
+            </div>
+            <div class="text-muted mb-2">
+                Record your training session
             </div>
 
             <div class="card-body">
@@ -269,7 +338,7 @@
                     class="btn btn-success btn-lg"
                     @click="createWorkout"
                     >
-                    Add Workout
+                    Add
                     </button>
                 </div>
 
@@ -277,92 +346,99 @@
         </div>
     </div>
 
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <table class="table table-hover align-middle mb-0">
+            <thead>
+            <tr>
+                <th>Exercise</th>
+                <th>Muscle Group</th>
+                <th>Weight(kg)</th>
+                <th>Reps</th>
+                <th>Sets</th>
+                <th>Date&Time</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr
+                v-for="workout in workouts"
+                :key="workout.id"
+            >
+                <td>{{ workout.exerciseName }}</td>
+                <td>
+                    <span class="badge bg-primary">
+                        {{ workout.muscleGroup }}
+                    </span>
+                </td>
+                                                                    
+                <td v-if="editingId !== workout.id">
+                    {{ workout.weight }}
+                </td>
+                <td v-else>
+                    <input v-model.number="editForm.weight" />
+                </td>
+
+                <td v-if="editingId !== workout.id">
+                    {{ workout.reps }}
+                </td>
+                <td v-else>
+                    <input v-model.number="editForm.reps" />
+                </td>
+
+                <td v-if="editingId !== workout.id">
+                    {{ workout.sets }}
+                </td>
+                <td v-else>
+                    <input v-model.number="editForm.sets" />
+                </td>
+                
+                <td>
+                    {{ workout.workoutDate
+                        ? workout.workoutDate.replace("T", " ")
+                        : "" }}
+                </td>
 
 
-    <table border="1" style="margin: 20px auto;">
-      <thead>
-      <tr>
-        <th>Exercise</th>
-        <th>Muscle Group</th>
-        <th>Weight(kg)</th>
-        <th>Reps</th>
-        <th>Sets</th>
-        <th>Date</th>
-        <th>Action</th>
-      </tr>
-      </thead>
+                <td>
+                    <template v-if="editingId !== workout.id">
+                        <button class="btn btn-warning" @click="startEdit(workout)">
+                            Edit
+                        </button>
 
-      <tbody>
-      <tr
-          v-for="workout in workouts"
-          :key="workout.id"
-      >
-        <td>{{ workout.exerciseName }}</td>
-        <td>{{ workout.muscleGroup }}</td>
-                                                             
-        <td v-if="editingId !== workout.id">
-            {{ workout.weight }}
-        </td>
-        <td v-else>
-            <input v-model.number="editForm.weight" />
-        </td>
+                        <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
+                            Delete
+                        </button>
+                    </template>
 
-        <td v-if="editingId !== workout.id">
-            {{ workout.reps }}
-        </td>
-        <td v-else>
-            <input v-model.number="editForm.reps" />
-        </td>
+                    <template v-else>
+                        <button class="btn btn-success" @click="saveEdit(workout.id)">
+                            Save
+                        </button>
 
-        <td v-if="editingId !== workout.id">
-            {{ workout.sets }}
-        </td>
-        <td v-else>
-            <input v-model.number="editForm.sets" />
-        </td>
-           
-        <td>
-             {{ workout.workoutDate
-                ? workout.workoutDate.replace("T", " ")
-                : "" }}
-        </td>
-
-
-        <td>
-            <template v-if="editingId !== workout.id">
-                <button class="btn btn-warning" @click="startEdit(workout)">
-                    Edit
-                </button>
-
-                <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
-                    Delete
-                </button>
-            </template>
-
-            <template v-else>
-                <button class="btn btn-success" @click="saveEdit(workout.id)">
-                    Save
-                </button>
-
-                <button class="btn btn-secondary" @click="cancelEdit">
-                    Cancel
-                </button>
-            </template>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+                        <button class="btn btn-secondary" @click="cancelEdit">
+                            Cancel
+                        </button>
+                    </template>
+                </td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
 
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed,  watch} from "vue";
 import http from "../api/http";
-import { computed } from "vue";
-import { watch } from "vue";
 import MuscleChart from './MuscleChart.vue'
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const workouts = ref([]);
 const exercises = ref([]);
 const selectedMuscleGroup = ref("")
@@ -429,7 +505,6 @@ const loadWorkouts = async () => {
 
   try {
 
-    //const response = await http.get("/workouts");
     const response = await http.get("/workouts", {
       params: {
         date: selectedDate.value || null
@@ -635,8 +710,18 @@ const chartLabels = computed(() =>
 )
 
 const chartData = computed(() =>
-  muscleGroupSummary.value.map(i => i[1].volume)
+  muscleGroupSummary.value.map(i => ({
+    group: i[0],
+    volume: i[1].volume,
+    exerciseCount: i[1].exerciseCount
+  }))
 )
+
+const topMuscle = computed(() => {
+  if (!muscleGroupSummary.value.length) return "-"
+
+  return muscleGroupSummary.value[0][0]
+})
 
 
 
@@ -650,9 +735,22 @@ onMounted(() => {
 watch(selectedDate, () => {
   loadWorkouts();
 });
+
+const logout = () => {
+
+  localStorage.removeItem("token")
+  localStorage.removeItem("email")
+
+  router.push("/")
+}
+
+const userEmail = ref(
+  localStorage.getItem("email")
+)
+
 </script>
 
-<style>
+<!-- <style>
 .add-workout select,
 .add-workout input,
 .add-workout button {
@@ -662,4 +760,4 @@ watch(selectedDate, () => {
 .fade {
   transition: all 0.2s ease;
 }
-</style>
+</style> -->
