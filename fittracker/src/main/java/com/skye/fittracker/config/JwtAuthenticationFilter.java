@@ -1,5 +1,6 @@
 package com.skye.fittracker.config;
 
+import com.skye.fittracker.enums.Role;
 import com.skye.fittracker.repository.UserRepository;
 import com.skye.fittracker.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -7,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.skye.fittracker.entity.User;
@@ -14,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -47,8 +49,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token)) {
                 String email = jwtUtil.extractEmail(token);
+                String role = jwtUtil.extractRole(token);
+
+                List<GrantedAuthority> authorities =
+                        List.of(
+                                new SimpleGrantedAuthority(
+                                        "ROLE_" + role
+                                )
+                        );
+
                 User user = userRepository.findByEmail(email)
                         .orElse(null);
+
+                System.out.println("email = " + email);
+                System.out.println("role = " + role);
+                System.out.println("authorities = " + authorities);
 
                 if (user != null &&
                         SecurityContextHolder.getContext()
@@ -57,8 +72,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     user,
                                     null,
-                                    List.of()
+                                    authorities
                             );
+
+                    System.out.println(auth.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }

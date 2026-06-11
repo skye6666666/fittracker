@@ -3,13 +3,13 @@ package com.skye.fittracker.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
 public class ProgressDto {
 
-    private LocalDateTime date;
+    private LocalDate date;
 
     private Double weight;
 

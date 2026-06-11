@@ -9,16 +9,25 @@
             <h1 class="mb-0">My Workouts</h1>
 
             <small class="text-muted">
-            Welcome, {{ userEmail }}
+            Welcome, {{ userEmail }} ({{ role }})
             </small>
         </div>
 
-        <button
-            class="btn btn-outline-danger"
-            @click="logout"
-        >
-            Logout
-        </button>
+        <div class="d-flex gap-2">
+            <button 
+                class="btn btn-outline-primary"
+                v-if="isAdmin" @click="createExercise"
+            >
+                Create Exercise
+            </button>
+
+            <button
+                class="btn btn-outline-danger"
+                @click="logout"
+            >
+                Logout
+            </button>
+        </div>
 
     </div>
 
@@ -98,24 +107,19 @@
         >
             Muscle Group
         </button>
+
+        <button
+            class="btn"
+            :class="selectedSummary === 'progress' ? 'btn-primary' : 'btn-outline-primary'"
+            @click="selectedSummary = 'progress'"
+        >
+            Exercise Progress
+        </button>
     </div>
 
-    <!-- <div class="summary" v-if="selectedSummary === 'today'">
-        <h3>Today Summary</h3>
-        <p>
-            總訓練量：{{ totalVolume }} kg
-        </p>
-        <p>
-            總組數：{{ totalSets }}</p>
-        <p>
-            總次數：{{ totalReps }}
-        </p>
-        <p>
-            動作數：{{ exerciseCount }}
-        </p>
-    </div> -->
+    
     <div class="card shadow-sm mb-4" v-if="selectedSummary === 'today'">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-info text-dark">
             Insight Panel
         </div>
 
@@ -164,6 +168,33 @@
         <hr>
         </div> -->
     </div>  
+
+    <div v-if="selectedSummary === 'progress'">
+
+        <h3>Exercise Progress</h3>
+
+        <select
+        class="form-select mb-3"
+        v-model="selectedExerciseId"
+        >
+            <option :value="null">
+                Select Exercise
+            </option>
+
+            <option
+                v-for="exercise in exercises"
+                :key="exercise.id"
+                :value="exercise.id"
+            >
+                {{ exercise.description }}
+            </option>
+
+        </select>
+
+        <ProgressChart
+        :data="progressData"
+        />
+    </div>
 
     
     
@@ -346,6 +377,7 @@
         </div>
     </div>
 
+    
     <div class="card shadow-sm">
         <div class="card-body p-0">
 
@@ -437,6 +469,8 @@ import { ref, onMounted, computed,  watch} from "vue";
 import http from "../api/http";
 import MuscleChart from './MuscleChart.vue'
 import { useRouter } from "vue-router"
+import ProgressChart from './ProgressChart.vue'
+import { getRole } from "../utils/auth"
 
 const router = useRouter()
 const workouts = ref([]);
@@ -446,6 +480,20 @@ const selectedDate = ref("")
 const editingId = ref(null)
 const selectedSummary = ref('today') 
 // 'today' | 'muscle'
+
+const selectedExerciseId = ref(null)
+const progressData = ref([])
+
+const userEmail = ref(
+  localStorage.getItem("email")
+)
+
+// const role = ref(
+//   localStorage.getItem("role")
+// )
+const role = ref(getRole())
+const isAdmin = computed(() => role.value === "ADMIN")
+
 
 const form = ref({
   exerciseId: null,
@@ -723,13 +771,36 @@ const topMuscle = computed(() => {
   return muscleGroupSummary.value[0][0]
 })
 
+const loadProgress = async () => {
+
+  if (!selectedExerciseId.value)
+    return
+
+  const response =
+    await http.get(
+      "/workouts/progress",
+      {
+        params: {
+          exerciseId:
+            selectedExerciseId.value
+        }
+      }
+    )
+
+  progressData.value = response.data
+}
+
+watch(
+  selectedExerciseId,
+  loadProgress
+)
 
 
 
 onMounted(() => {
   selectedDate.value = new Date().toISOString().slice(0, 10)
   loadWorkouts();
-  loadExercises();
+  loadExercises(); 
 });
 
 watch(selectedDate, () => {
@@ -740,13 +811,12 @@ const logout = () => {
 
   localStorage.removeItem("token")
   localStorage.removeItem("email")
+  localStorage.removeItem("role")
 
   router.push("/")
 }
 
-const userEmail = ref(
-  localStorage.getItem("email")
-)
+
 
 </script>
 

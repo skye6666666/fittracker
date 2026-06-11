@@ -1,5 +1,6 @@
 package com.skye.fittracker.dto;
 
+import com.skye.fittracker.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

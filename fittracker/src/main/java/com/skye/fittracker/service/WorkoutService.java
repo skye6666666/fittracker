@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WorkoutService {
@@ -101,13 +103,42 @@ public class WorkoutService {
 
     public List<ProgressDto> getWorkoutProgess(Long userId, Long exerciseId) {
 
-        return workoutRepo
-                .findByUserIdAndExerciseIdOrderByWorkoutDateAsc(userId, exerciseId)
+//        return workoutRepo
+//                .findByUserIdAndExerciseIdOrderByWorkoutDateAsc(userId, exerciseId)
+//                .stream()
+//                .map(record ->
+//                        new ProgressDto(
+//                                record.getWorkoutDate(),
+//                                record.getWeight())
+//                )
+//                .toList();
+        List<WorkoutRecord> records = workoutRepo.findByUserIdAndExerciseIdOrderByWorkoutDateAsc(
+                userId,
+                exerciseId
+        );
+
+        Map<LocalDate, Double> dailyMax = new LinkedHashMap<>();
+
+        for (WorkoutRecord record : records) {
+
+            LocalDate date =
+                    record.getWorkoutDate()
+                            .toLocalDate();
+
+            dailyMax.merge(
+                    date,
+                    record.getWeight(),
+                    Math::max
+            );
+        }
+
+        return dailyMax.entrySet()
                 .stream()
-                .map(record ->
+                .map(entry ->
                         new ProgressDto(
-                                record.getWorkoutDate(),
-                                record.getWeight())
+                                entry.getKey(),
+                                entry.getValue()
+                        )
                 )
                 .toList();
     }

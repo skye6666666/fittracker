@@ -1,5 +1,6 @@
 package com.skye.fittracker.entity;
 
+import com.skye.fittracker.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,7 @@ public class User {
     private String password;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

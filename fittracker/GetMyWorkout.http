@@ -1,2 +1,2 @@
 GET http://localhost:8080/api/workouts?date=2026-06-08
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJpYXQiOjE3ODA5MDUwNDIsImV4cCI6MTc4MDkwODY0Mn0.5HZ6cV5b2VEtOnN-srIQ496RJZtbSbiV9Eqyu1mhyOM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJpYXQiOjE3ODEwODI3MjAsImV4cCI6MTc4MTA4NjMyMH0.-C0ujnWuU2BHhuCZ_E8gTlHcDu_irebilBB3NCFKiTo

@@ -1,4 +1,5 @@
 POST http://localhost:8080/api/exercises
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MTE0NDI4OSwiZXhwIjoxNzgxMTQ3ODg5fQ.7UBjgLgnPMhDTfRwlgxI0nVTP3auHROqjaUy89QXshg
 Content-Type: application/json
 
 {

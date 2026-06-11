@@ -1,6 +1,7 @@
 package com.skye.fittracker.repository;
 
 import com.skye.fittracker.entity.Exercise;
+import com.skye.fittracker.entity.User;
 import com.skye.fittracker.entity.WorkoutRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,5 +27,5 @@ public interface WorkoutRecordRepository
     );
 
 
-
+    Long user(User user);
 }

@@ -20,12 +20,14 @@
 import { ref } from "vue";
 import http from "../api/http";
 import { useRouter } from "vue-router"
+import { parseJwt } from "../utils/auth.js"
 
 const router = useRouter()
 
 const email = ref("");
 const password = ref("");
 const loading = ref(false)
+const role = ref("");
 
 
 const login = async () => {
@@ -45,6 +47,14 @@ const login = async () => {
     localStorage.setItem(
     "email",
     email.value
+    );
+
+    const user = parseJwt(response.data.token)
+    role.value = user?.role || "UNKNOWN"
+
+    localStorage.setItem(
+      "role",
+      role.value
     );
 
     alert("登入成功");

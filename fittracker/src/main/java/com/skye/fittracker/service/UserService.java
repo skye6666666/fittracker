@@ -5,6 +5,7 @@ import com.skye.fittracker.dto.LoginResponse;
 import com.skye.fittracker.dto.UserRegisterRequest;
 import com.skye.fittracker.dto.UserResponse;
 import com.skye.fittracker.entity.User;
+import com.skye.fittracker.enums.Role;
 import com.skye.fittracker.util.JwtUtil;
 import com.skye.fittracker.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,7 +58,8 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(),user.getRole());
+
 
         return new LoginResponse(token);
     }
