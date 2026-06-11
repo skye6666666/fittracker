@@ -49,13 +49,13 @@ const login = async () => {
     email.value
     );
 
-    const user = parseJwt(response.data.token)
-    role.value = user?.role || "UNKNOWN"
+    // const user = parseJwt(response.data.token)
+    // role.value = user?.role || "UNKNOWN"
 
-    localStorage.setItem(
-      "role",
-      role.value
-    );
+    // localStorage.setItem(
+    //   "role",
+    //   role.value
+    // );
 
     alert("登入成功");
 

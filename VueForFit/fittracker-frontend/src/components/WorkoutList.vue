@@ -790,6 +790,14 @@ const loadProgress = async () => {
   progressData.value = response.data
 }
 
+const createExercise = () => {
+
+  router.push(
+    "/admin/create-exercise"
+  )
+
+}
+
 watch(
   selectedExerciseId,
   loadProgress

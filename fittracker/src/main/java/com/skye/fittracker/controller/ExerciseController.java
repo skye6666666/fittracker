@@ -3,6 +3,7 @@ package com.skye.fittracker.controller;
 import com.skye.fittracker.dto.ExerciseCreateRequest;
 import com.skye.fittracker.entity.Exercise;
 import com.skye.fittracker.service.ExerciseService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class ExerciseController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Exercise createExercise(
+            @Valid
             @RequestBody ExerciseCreateRequest request) {
 
 
