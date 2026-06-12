@@ -569,7 +569,7 @@ const loadWorkouts = async () => {
 
     console.error(error);
 
-    alert("讀取失敗");
+    //alert("讀取失敗");
 
   }
 };

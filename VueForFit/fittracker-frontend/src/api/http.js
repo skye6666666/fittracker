@@ -24,6 +24,7 @@ http.interceptors.response.use(
       if (error.response.status === 401||error.response.status === 403) {
         alert("登入已過期，請重新登入");
         logout()
+                
       } else if (error.response.status >= 500) {
         alert("伺服器錯誤，請稍後再試");
       }

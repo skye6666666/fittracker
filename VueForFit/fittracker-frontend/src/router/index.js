@@ -4,7 +4,7 @@ import LoginView from "../views/LoginView.vue"
 import { getRole } from "../utils/auth"
 import CreateExerciseView from "../views/CreateExerciseView.vue"
 import ExerciseManagementView from "../views/ExerciseManagementView.vue"
-import { parseJwt } from "../utils/auth"
+import { parseJwt, logout } from "../utils/auth"
 
 const routes = [
   { path: "/", component: LoginView },
@@ -58,19 +58,37 @@ const router = createRouter({
 
 router.beforeEach((to) => {
 
-  const token =
-    localStorage.getItem("token")
+  const token = localStorage.getItem("token")
 
   const role = getRole()
 
-  if (
-    to.meta.requiresAuth &&
-    !token
-  ) {
+  if (to.path === "/") {
+    return true
+  }
+
+  //沒token
+  if (to.meta.requiresAuth && !token) {
     return "/"
     
   } 
 
+  //token過期
+  if (to.meta.requiresAuth && isTokenExpired()) {
+    alert("登入已過期，請重新登入");
+    //logout()
+    return "/"
+    
+
+  }
+
+  //admin權限
+  if (to.meta.requiresAdmin && role !== "ADMIN") {
+    return "/workouts"
+    
+  } 
+
+
+  //已登入卻去login
   if (
     to.path === "/" &&
     token
@@ -79,25 +97,7 @@ router.beforeEach((to) => {
     
   }
 
-  if (
-    to.meta.requiresAdmin &&
-    role !== "ADMIN"
-  ) {
-    return "/workouts"
-    
-  } 
-
-  if (
-    to.meta.requiresAuth &&
-    isTokenExpired()
-  ) {
-
-    logout()
-
-    return "/"
-
-  }
-
+  
   return true
 })
 
@@ -109,13 +109,15 @@ export function isTokenExpired() {
   if (!token)
     return true
 
-  const payload =
-    parseJwt(token)
+  try {
+    const payload = parseJwt(token)
+    if (!payload?.exp) return true
 
-  return (
-    payload.exp * 1000 <
-    Date.now()
-  )
+    return payload.exp * 1000 < Date.now()
+
+  } catch (e) {
+    return true
+  }
 
 }
 
