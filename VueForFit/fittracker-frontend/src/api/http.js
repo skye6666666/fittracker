@@ -1,4 +1,5 @@
 import axios from "axios";
+import { logout } from "../utils/auth"
 
 const http = axios.create({
   baseURL: "http://localhost:8080/api",
@@ -20,11 +21,9 @@ http.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      if (error.response.status === 401) {
+      if (error.response.status === 401||error.response.status === 403) {
         alert("登入已過期，請重新登入");
-        localStorage.removeItem("token");
-        // 這裡可以加上 router.push("/login") 讓使用者回登入頁
-        router.push("../views/LoginView.vue")
+        logout()
       } else if (error.response.status >= 500) {
         alert("伺服器錯誤，請稍後再試");
       }

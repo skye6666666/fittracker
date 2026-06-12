@@ -1,4 +1,11 @@
 <template>
+    <div
+        v-if="successMessage"
+        class="alert alert-success"
+        >
+        {{ successMessage }}
+    </div>
+
   <div class="container mt-4">
 
     <h2>Create Exercise</h2>
@@ -68,6 +75,7 @@ import { useRouter } from "vue-router"
 
 const router = useRouter()
 const errorMessage = ref("")
+const successMessage = ref("")
 
 const form = ref({
   name: "",
@@ -93,7 +101,15 @@ const createExercise = async () => {
       form.value
     )
 
-    alert("Exercise 建立成功")
+    //alert("Exercise 建立成功")
+    successMessage.value =
+        "Exercise added successfully"
+
+    setTimeout(() => {
+    successMessage.value = ""
+    }, 3000)
+
+
 
     form.value = {
       name: "",
@@ -123,7 +139,7 @@ const cancelCreate = () => {
     }
 
     router.push(
-    "/workouts"
+    "/admin/exercises"
     )
 
 

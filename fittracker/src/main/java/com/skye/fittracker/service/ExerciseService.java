@@ -30,4 +30,18 @@ public class ExerciseService {
     public List<Exercise> getAllExercises(){
         return exerciseRepository.findAll();
     }
+
+    public void deleteExercise(Long id){
+        exerciseRepository.deleteById(id);
+    }
+
+    public Exercise updateExercise(Long id, ExerciseCreateRequest request){
+        Exercise exercise = exerciseRepository.findById(id).orElseThrow();
+
+        exercise.setDescription(request.getDescription());
+        exercise.setName(request.getName());
+        exercise.setMuscleGroup(request.getMuscleGroup());
+
+        return exerciseRepository.save(exercise);
+    }
 }

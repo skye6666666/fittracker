@@ -16,9 +16,9 @@
         <div class="d-flex gap-2">
             <button 
                 class="btn btn-outline-primary"
-                v-if="isAdmin" @click="createExercise"
+                v-if="isAdmin" @click="goToExerciseManagement"
             >
-                Create Exercise
+                Exercise Management
             </button>
 
             <button
@@ -410,21 +410,21 @@
                     {{ workout.weight }}
                 </td>
                 <td v-else>
-                    <input v-model.number="editForm.weight" />
+                    <input v-model.number="editForm.weight" class="form-control form-control-sm" style="width: 60px;"/>
                 </td>
 
-                <td v-if="editingId !== workout.id">
+                <td v-if="editingId !== workout.id" >
                     {{ workout.reps }}
                 </td>
                 <td v-else>
-                    <input v-model.number="editForm.reps" />
+                    <input v-model.number="editForm.reps" class="form-control form-control-sm" style="width: 60px;"/>
                 </td>
 
                 <td v-if="editingId !== workout.id">
                     {{ workout.sets }}
                 </td>
                 <td v-else>
-                    <input v-model.number="editForm.sets" />
+                    <input v-model.number="editForm.sets" class="form-control form-control-sm" style="width: 60px;"/>
                 </td>
                 
                 <td>
@@ -435,25 +435,27 @@
 
 
                 <td>
-                    <template v-if="editingId !== workout.id">
-                        <button class="btn btn-warning" @click="startEdit(workout)">
-                            Edit
-                        </button>
+                    <div class="d-flex gap-1">
+                        <template v-if="editingId !== workout.id">
+                            <button class="btn btn-warning" @click="startEdit(workout)">
+                                Edit
+                            </button>
 
-                        <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
-                            Delete
-                        </button>
-                    </template>
+                            <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
+                                Delete
+                            </button>
+                        </template>
 
-                    <template v-else>
-                        <button class="btn btn-success" @click="saveEdit(workout.id)">
-                            Save
-                        </button>
+                        <template v-else>
+                            <button class="btn btn-success" @click="saveEdit(workout.id)">
+                                Save
+                            </button>
 
-                        <button class="btn btn-secondary" @click="cancelEdit">
-                            Cancel
-                        </button>
-                    </template>
+                            <button class="btn btn-secondary" @click="cancelEdit">
+                                Cancel
+                            </button>
+                        </template>
+                    </div>
                 </td>
             </tr>
             </tbody>
@@ -470,7 +472,7 @@ import http from "../api/http";
 import MuscleChart from './MuscleChart.vue'
 import { useRouter } from "vue-router"
 import ProgressChart from './ProgressChart.vue'
-import { getRole } from "../utils/auth"
+import {getRole, logout} from "../utils/auth"
 
 const router = useRouter()
 const workouts = ref([]);
@@ -790,10 +792,18 @@ const loadProgress = async () => {
   progressData.value = response.data
 }
 
-const createExercise = () => {
+// const createExercise = () => {
+
+//   router.push(
+//     "/admin/create-exercise"
+//   )
+
+// }
+
+const goToExerciseManagement = () => {
 
   router.push(
-    "/admin/create-exercise"
+    "/admin/exercises"
   )
 
 }
@@ -815,14 +825,14 @@ watch(selectedDate, () => {
   loadWorkouts();
 });
 
-const logout = () => {
+// const logout = () => {
 
-  localStorage.removeItem("token")
-  localStorage.removeItem("email")
-  localStorage.removeItem("role")
+//   localStorage.removeItem("token")
+//   localStorage.removeItem("email")
+//   localStorage.removeItem("role")
 
-  router.push("/")
-}
+//   router.push("/")
+// }
 
 
 
