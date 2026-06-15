@@ -14,14 +14,6 @@
 
       <h2>Exercise Management</h2>
 
-      <div class="mb-3">
-        <input
-            v-model="search"
-            class="form-control"
-            placeholder="Search exercise..."
-        />
-      </div>
-
       <div class="d-flex gap-2">
                 
         <button
@@ -38,94 +30,40 @@
             Back
         </button>
 
-      </div>
+      </div>    
       
-
     </div>
 
-    <table class="table table-hover">
+    <div class="mb-3">
+        <input
+            v-model="search"
+            class="form-control"
+            placeholder="Search exercise..."
+        />
+        
+    </div>
+    <p class="text-muted">
+            Showing {{ filteredExercises.length }} exercises
+    </p>
 
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Name</th>
-          <th>Muscle Group</th>
-          <th>Action</th>
-        </tr>
-      </thead>
 
-      <tbody>
-
-        <tr
-          v-for="exercise in paginatedExercises"
-          :key="exercise.id"
-        >
-
-          <td v-if="editingId !== exercise.id">
-            {{ exercise.description }}
-          </td>
-          <td v-else>
-            <input class="form-control" v-model="editForm.description" />
-          </td>
-
-          <td v-if="editingId !== exercise.id">
-            {{ exercise.name }}
-          </td>
-          <td v-else>
-            <input class="form-control" v-model="editForm.name" />
-          </td>
-
-          <td v-if="editingId !== exercise.id">
-            {{ exercise.muscleGroup }}
-          </td>
-          <td v-else>
-            <input class="form-control" v-model="editForm.muscleGroup" />
-          </td>
-
-          <td class="text-center">
-            <div class="d-flex justify-content-center gap-1">
-                <template v-if="editingId !== exercise.id">
-                    <button class="btn btn-warning" @click="startEdit(exercise)">
-                        Edit
-                    </button>
-
-                    <button class="btn btn-danger" @click="deleteExercise(exercise.id)">
-                        Delete
-                    </button>
-                </template>
-
-                <template v-else>
-                    <button class="btn btn-success" @click="saveEdit(exercise.id)">
-                        Save
-                    </button>
-
-                    <button class="btn btn-secondary" @click="cancelEdit">
-                        Cancel
-                    </button>
-                </template>
-            </div>
-          </td>
-
-        </tr>
-
-        <tr v-if="paginatedExercises.length === 0">
-            <td colspan="4">No exercises found</td>
-        </tr>
-
-      </tbody>
-
-    </table>
+    <ExerciseTable
+    :exercises="paginatedExercises"
+    :editing-id="editingId"
+    :edit-form="editForm"
+    @start-edit="startEdit"
+    @save-edit="saveEdit"
+    @cancel-edit="cancelEdit"
+    @delete-exercise="deleteExercise"
+    />
+    
 
     <div class="d-flex gap-1 mt-3">
-        <button
-            class="btn btn-outline-primary"
-            v-for="p in totalPages"
-            :key="p"
-            @click="page = p"
-            :class="{ active: page === p }"
-        >
-            {{ p }}
-        </button>
+        <ExercisePagination
+            :page="page"
+            :total-pages="totalPages"
+            @change-page="page = $event"
+        />
     </div>
 
   </div>
@@ -136,8 +74,12 @@
 import { ref, onMounted, computed, watch } from "vue"
 import { useRouter } from "vue-router"
 import http from "../api/http"
+import ExerciseTable from "../components/ExerciseTable.vue"
+import ExercisePagination from "../components/ExercisePagination.vue"
 
 const router = useRouter()
+
+
 const exercises = ref([])
 const editingId = ref(null)
 const editForm = ref({
@@ -152,10 +94,44 @@ const search = ref("")
 const page = ref(1)
 const pageSize = 5
 
+//computed
+const filteredExercises = computed(() => {
+  return exercises.value.filter((ex) => {
+    const keyword = search.value.toLowerCase()
+
+    return (
+      ex.name.toLowerCase().includes(keyword) ||
+      ex.description.toLowerCase().includes(keyword) ||
+      ex.muscleGroup.toLowerCase().includes(keyword)
+    )
+  })
+})
+
+const paginatedExercises = computed(() => {
+  const start = (page.value - 1) * pageSize
+  const end = start + pageSize
+
+  return filteredExercises.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredExercises.value.length / pageSize)
+})
 
 
+//watch
+watch(search, () => {
+  page.value = 1
+})
+
+watch(totalPages, () => {
+  if (page.value > totalPages.value) {
+    page.value = 1
+  }
+})
 
 
+//method
 const loadExercises = async () => {
     try {
         const response = await http.get("/exercises")
@@ -226,32 +202,32 @@ const saveEdit = async (id) => {
     }
 
 
-  try {
+    try {
 
-    await http.put(
-      `/exercises/${id}`,
-      editForm.value
-    )
+        await http.put(
+        `/exercises/${id}`,
+        editForm.value
+        )
 
-    alert("修改成功")
+        alert("修改成功")
 
-    editingId.value = null
+        editingId.value = null
 
-    editForm.value = {
-        description: null,
-        name: null,
-        muscleGroup: null
+        editForm.value = {
+            description: null,
+            name: null,
+            muscleGroup: null
+        }
+
+        await loadExercises()
+
+    } catch(error) {
+
+        console.error(error)
+
+        alert("修改失敗")
+
     }
-
-    await loadExercises()
-
-  } catch(error) {
-
-    console.error(error)
-
-    alert("修改失敗")
-
-  }
 }
 
 const cancelEdit = () => {
@@ -279,39 +255,8 @@ const backToWorkoutList = () => {
 
 }
 
-const filteredExercises = computed(() => {
-  return exercises.value.filter((ex) => {
-    const keyword = search.value.toLowerCase()
 
-    return (
-      ex.name.toLowerCase().includes(keyword) ||
-      ex.description.toLowerCase().includes(keyword) ||
-      ex.muscleGroup.toLowerCase().includes(keyword)
-    )
-  })
-})
-
-const paginatedExercises = computed(() => {
-  const start = (page.value - 1) * pageSize
-  const end = start + pageSize
-
-  return filteredExercises.value.slice(start, end)
-})
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredExercises.value.length / pageSize)
-})
-
-watch(search, () => {
-  page.value = 1
-})
-
-watch(totalPages, () => {
-  if (page.value > totalPages.value) {
-    page.value = 1
-  }
-})
-
+//lifecycle
 onMounted(() => {
     loadExercises();
 });

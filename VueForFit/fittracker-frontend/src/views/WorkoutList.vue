@@ -468,11 +468,11 @@
 
 <script setup>
 import { ref, onMounted, computed,  watch} from "vue";
-import http from "../api/http";
-import MuscleChart from './MuscleChart.vue'
+import http from "../api/http.js";
+import MuscleChart from '../components/MuscleChart.vue'
 import { useRouter } from "vue-router"
-import ProgressChart from './ProgressChart.vue'
-import {getRole, logout} from "../utils/auth"
+import ProgressChart from '../components/ProgressChart.vue'
+import {getRole, logout} from "../utils/auth.js"
 
 const router = useRouter()
 const workouts = ref([]);

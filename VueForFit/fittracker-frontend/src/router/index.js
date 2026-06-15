@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
-import WorkoutList from "../components/WorkoutList.vue"
+import WorkoutList from "../views/WorkoutList.vue"
 import LoginView from "../views/LoginView.vue"
 import { getRole } from "../utils/auth"
 import CreateExerciseView from "../views/CreateExerciseView.vue"
