@@ -14,6 +14,14 @@
 
       <h2>Exercise Management</h2>
 
+      <div class="mb-3">
+        <input
+            v-model="search"
+            class="form-control"
+            placeholder="Search exercise..."
+        />
+      </div>
+
       <div class="d-flex gap-2">
                 
         <button
@@ -49,7 +57,7 @@
       <tbody>
 
         <tr
-          v-for="exercise in exercises"
+          v-for="exercise in paginatedExercises"
           :key="exercise.id"
         >
 
@@ -74,8 +82,8 @@
             <input class="form-control" v-model="editForm.muscleGroup" />
           </td>
 
-          <td>
-            <div class="d-flex gap-1">
+          <td class="text-center">
+            <div class="d-flex justify-content-center gap-1">
                 <template v-if="editingId !== exercise.id">
                     <button class="btn btn-warning" @click="startEdit(exercise)">
                         Edit
@@ -100,16 +108,32 @@
 
         </tr>
 
+        <tr v-if="paginatedExercises.length === 0">
+            <td colspan="4">No exercises found</td>
+        </tr>
+
       </tbody>
 
     </table>
+
+    <div class="d-flex gap-1 mt-3">
+        <button
+            class="btn btn-outline-primary"
+            v-for="p in totalPages"
+            :key="p"
+            @click="page = p"
+            :class="{ active: page === p }"
+        >
+            {{ p }}
+        </button>
+    </div>
 
   </div>
 
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed, watch } from "vue"
 import { useRouter } from "vue-router"
 import http from "../api/http"
 
@@ -122,6 +146,14 @@ const editForm = ref({
   muscleGroup: null
 })
 const successMessage = ref("")
+
+//add search & pagination
+const search = ref("")
+const page = ref(1)
+const pageSize = 5
+
+
+
 
 
 const loadExercises = async () => {
@@ -239,27 +271,46 @@ const goToCreateExercise = () => {
 }
 
 
-
-
-
-
-
-
-
 const backToWorkoutList = () => {
-
-    // form.value = {
-    //   name: "",
-    //   description: "",
-    //   muscleGroup: ""
-    // }
 
     router.push(
     "/workouts"
     )
 
-
 }
+
+const filteredExercises = computed(() => {
+  return exercises.value.filter((ex) => {
+    const keyword = search.value.toLowerCase()
+
+    return (
+      ex.name.toLowerCase().includes(keyword) ||
+      ex.description.toLowerCase().includes(keyword) ||
+      ex.muscleGroup.toLowerCase().includes(keyword)
+    )
+  })
+})
+
+const paginatedExercises = computed(() => {
+  const start = (page.value - 1) * pageSize
+  const end = start + pageSize
+
+  return filteredExercises.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredExercises.value.length / pageSize)
+})
+
+watch(search, () => {
+  page.value = 1
+})
+
+watch(totalPages, () => {
+  if (page.value > totalPages.value) {
+    page.value = 1
+  }
+})
 
 onMounted(() => {
     loadExercises();
