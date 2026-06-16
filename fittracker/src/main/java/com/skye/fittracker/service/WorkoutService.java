@@ -58,8 +58,8 @@ public class WorkoutService {
         record.setWeight(request.getWeight());
         record.setReps(request.getReps());
         record.setSets(request.getSets());
-        //record.setWorkoutDate(request.getWorkoutDate());
-        record.setWorkoutDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        record.setWorkoutDate(request.getWorkoutDate());
+        //record.setWorkoutDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
 
         // 🔥 關鍵：自動綁 user
@@ -91,11 +91,11 @@ public class WorkoutService {
             date = LocalDate.now();
         }
 
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(23, 59, 59);
+        //LocalDateTime start = date.atStartOfDay();
+        //LocalDateTime end = date.atTime(23, 59, 59);
 
         return workoutRepo
-                .findByUserIdAndWorkoutDateBetween(userId, start, end)
+                .findByUserIdAndWorkoutDate(userId, date)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -122,8 +122,7 @@ public class WorkoutService {
         for (WorkoutRecord record : records) {
 
             LocalDate date =
-                    record.getWorkoutDate()
-                            .toLocalDate();
+                    record.getWorkoutDate();
 
             dailyMax.merge(
                     date,

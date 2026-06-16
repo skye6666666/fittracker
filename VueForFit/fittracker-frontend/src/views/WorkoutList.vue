@@ -272,6 +272,16 @@
                 Record your training session
             </div>
 
+            <div>
+                <label>Workout Date</label>
+
+                <input
+                    type="date"
+                    v-model="form.workoutDate"
+                    class="form-control"
+                />
+            </div>
+
             <div class="card-body">
 
                 <!-- Muscle Group + Exercise + Badge -->
@@ -428,9 +438,7 @@
                 </td>
                 
                 <td>
-                    {{ workout.workoutDate
-                        ? workout.workoutDate.replace("T", " ")
-                        : "" }}
+                    {{ workout.workoutDate }}
                 </td>
 
 
@@ -590,7 +598,7 @@ console.log(form.value)
       weight: null,
       reps: null,
       sets: null,
-      workoutDate: null
+      workoutDate: selectedDate
     };
 
     //將肌群一並清空

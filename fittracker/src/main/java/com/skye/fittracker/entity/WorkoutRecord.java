@@ -2,6 +2,8 @@ package com.skye.fittracker.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,7 +28,7 @@ public class WorkoutRecord {
 
     private Integer sets;
 
-    private LocalDateTime workoutDate;
+    private LocalDate workoutDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

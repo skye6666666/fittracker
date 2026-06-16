@@ -1,6 +1,6 @@
 package com.skye.fittracker.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record WorkoutResponse(
         Long id,
@@ -9,5 +9,5 @@ public record WorkoutResponse(
         Double weight,
         Integer reps,
         Integer sets,
-        LocalDateTime workoutDate
+        LocalDate workoutDate
 ) {}

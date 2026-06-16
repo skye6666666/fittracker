@@ -2,7 +2,7 @@ package com.skye.fittracker.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class WorkoutCreateRequest {
@@ -10,5 +10,5 @@ public class WorkoutCreateRequest {
     private Double weight;
     private Integer reps;
     private Integer sets;
-    //private LocalDateTime workoutDate;
+    private LocalDate workoutDate;
 }
