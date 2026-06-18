@@ -1,9 +1,6 @@
 package com.skye.fittracker.controller;
 
-import com.skye.fittracker.dto.LoginRequest;
-import com.skye.fittracker.dto.LoginResponse;
-import com.skye.fittracker.dto.UserRegisterRequest;
-import com.skye.fittracker.dto.UserResponse;
+import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +16,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody UserRegisterRequest request) {
-        return userService.register(request);
+    public String register(@RequestBody UserRegisterRequest request) {
+        userService.register(request);
+        return "Register Success";
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return userService.login(request);
     }
+
 }

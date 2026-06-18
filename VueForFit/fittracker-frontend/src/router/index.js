@@ -5,6 +5,7 @@ import { getRole } from "../utils/auth"
 import CreateExerciseView from "../views/CreateExerciseView.vue"
 import ExerciseManagementView from "../views/ExerciseManagementView.vue"
 import { parseJwt, logout } from "../utils/auth"
+import Register from "../components/Register.vue"
 
 const routes = [
   { path: "/", component: LoginView },
@@ -23,7 +24,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
+      path: "/login",
       component: LoginView
     },
 
@@ -53,6 +54,11 @@ const router = createRouter({
         requiresAdmin: true
       }
     }
+    ,
+    {
+      path: '/register',
+      component: Register
+    }
   ]
 })
 
@@ -62,13 +68,13 @@ router.beforeEach((to) => {
 
   const role = getRole()
 
-  if (to.path === "/") {
+  if (to.path === "/login") {
     return true
   }
 
   //沒token
   if (to.meta.requiresAuth && !token) {
-    return "/"
+    return "/login"
     
   } 
 
@@ -76,7 +82,7 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && isTokenExpired()) {
     alert("登入已過期，請重新登入");
     //logout()
-    return "/"
+    return "/login"
     
 
   }
@@ -90,11 +96,17 @@ router.beforeEach((to) => {
 
   //已登入卻去login
   if (
-    to.path === "/" &&
+    to.path === "/login" &&
     token
   ) {
     return "/workouts"
     
+  }
+
+  if (
+    to.path === "/"
+  ){
+    return "/login"
   }
 
   

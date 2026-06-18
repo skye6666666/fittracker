@@ -149,9 +149,12 @@
 
 
         <div class="card shadow-sm mb-4">     
-            <div class="card-header bg-primary bg-opacity-75 text-white">
+            <!-- <div class="card-header bg-primary text-white">
                 Muscle Chart
-            </div>
+            </div> -->
+            <h4 class="mt-4">
+                Muscle Chart
+            </h4>
             <div>
                 <MuscleChart
                     :labels="chartLabels"
@@ -376,9 +379,9 @@
         
         <!-- weeklyworkout kpi-->
         <div class="row g-3 mb-4">
-            <h4 class="mb-3">
+            <!-- <h4 class="mb-3">
                 Weekly Dashboard
-            </h4>
+            </h4> -->
 
             <div class="col-md-3">
                 <div class="card shadow-sm">
@@ -419,18 +422,21 @@
         </div>
 
 
-        <h4 class="mt-4">
-            Weekly Volume Trend
-        </h4>
 
-        <WeeklyVolumeChart
-            :labels="weeklyChartLabels"
-            :data="weeklyChartData"
-        />
+        <div class="card shadow-lg mb-4">  
+            <h4 class="mt-4">
+                Weekly Volume Trend
+            </h4>
 
-        <div class="card mt-4">
+            <WeeklyVolumeChart
+                :labels="weeklyChartLabels"
+                :data="weeklyChartData"
+            />
+        </div>
 
-            <div class="card-header bg-primary bg-opacity-75 text-white">
+        <div class="card shadow-lg mt-4">
+
+            <div class="card-header bg-primary text-white">
                 Weekly Muscle Summary
             </div>
 
@@ -445,6 +451,7 @@
                     <th>Exercises</th>
                     <th>Sets</th>
                     <th>Volume</th>
+                    <th>Share</th>
                 </tr>
 
                 </thead>
@@ -470,6 +477,37 @@
 
                     <td>
                     {{ item[1].volume.toLocaleString() }} kg
+                    </td>
+
+                    <td style="min-width:200px">
+
+                        <div class="d-flex align-items-center">
+
+                            <div
+                            class="progress flex-grow-1 me-2"
+                            style="height:20px"
+                            >
+
+                            <div
+                                class="progress-bar bg-success"
+                                :style="{
+                                width:
+                                    getVolumeShare(item[1].volume)
+                                    + '%'
+                                }"
+                            >
+                            </div>
+
+                        </div>
+
+                        <small>
+
+                        {{ getVolumeShare(item[1].volume) }}%
+
+                        </small>
+
+                        </div>
+
                     </td>
 
                 </tr>
@@ -867,7 +905,7 @@ const muscleGroupSummary = computed(() => {
 
   })
 
-  console.log(summary);
+  //console.log(summary);
 
   const result = Object.entries(summary).map(([group,data]) => {
     return [
@@ -1104,11 +1142,27 @@ const exerciseCount = computed(() => {
 
 })
 
-
-
-// watch(weeklyVolumeByDay, () => {
-//   console.log(weeklyVolumeByDay.value)
+// watch(weeklyVolume, (newVal) => {
+//   console.log("weeklyVolume updated:", newVal)
 // })
+
+
+
+const getVolumeShare = (volume) => {
+
+  if (!weeklyVolume.value) {
+    return 0
+  }
+
+  return (
+    volume /
+    weeklyVolume.value *
+    100
+  ).toFixed(1)
+
+}
+
+
 
 watch(
   selectedExerciseId,

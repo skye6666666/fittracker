@@ -42,6 +42,8 @@ public class UserService {
         //user.setPassword(request.getPassword()); // 之後會改成加密
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
+        user.setRole(Role.USER);
+        user.setEnabled(true);
 
         User saved = userRepository.save(user);
 
@@ -53,6 +55,10 @@ public class UserService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+//        if(!user.isEnabled()){
+//            throw new RuntimeException("Please verify your email");
+//        }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");

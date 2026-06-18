@@ -1,16 +1,25 @@
 <template>
   <div>
-    <h1>FitTracker Login</h1>
+    <h1>FitTracker</h1>
 
-    <div>
-        <input v-model="email" placeholder="Email" />
+    <div class="d-flex justify-content-center mb-3">
+        <input class="form-control w-25" 
+        v-model="email" 
+        placeholder="Email" />
     </div>
-    <div>
-        <input v-model="password" type="password" placeholder="Password" />
+    <div class="d-flex justify-content-center mb-3">
+        <input class="form-control w-25" 
+        v-model="password" 
+        type="password" 
+        placeholder="Password" />
     </div>
     
-    <button @click="login" :disabled="loading">
+    <button  class="btn btn-success me-2" @click="login" :disabled="loading">
         {{ loading ? "登入中..." : "Login" }}
+    </button>
+
+    <button class="btn btn-warning" @click="goToRegister">
+        Register
     </button>
 
   </div>
@@ -21,6 +30,7 @@ import { ref } from "vue";
 import http from "../api/http";
 import { useRouter } from "vue-router"
 import { parseJwt } from "../utils/auth.js"
+import Register from "../components/Register.vue";
 
 const router = useRouter()
 
@@ -74,5 +84,14 @@ const login = async () => {
     alert(error.response?.data?.message || "登入失敗");
   }
 };
+
+
+const goToRegister = () => {
+
+  router.push(
+    "/register"
+  )
+
+}
 </script>
 

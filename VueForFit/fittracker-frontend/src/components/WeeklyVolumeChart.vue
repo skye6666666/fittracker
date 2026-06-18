@@ -49,7 +49,7 @@ const renderChart = () => {
           {
             label: 'Weekly Volume',
             data: props.data,
-            backgroundColor: 'rgba(255, 218, 34, 0.6)',
+            backgroundColor: 'rgba(255, 218, 34, 0.8)',
             hoverBackgroundColor: 'rgba(255, 218, 34, 1)',
             borderRadius: 8,
             maxBarThickness: 50
