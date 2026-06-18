@@ -40,12 +40,12 @@ public class WorkoutController {
 //        return workoutService.getMyWorkouts(token);
 //    }
 
-//    @GetMapping
-//    public List<WorkoutResponse> getMyWorkouts(
-//            @AuthenticationPrincipal User user
-//    ) {
-//        return workoutService.getMyWorkouts(user.getId());
-//    }
+    @GetMapping("/all")
+    public List<WorkoutResponse> getAllMyWorkouts(
+            @AuthenticationPrincipal User user
+    ) {
+        return workoutService.getAllMyWorkouts(user.getId());
+    }
 
     @GetMapping
     public List<WorkoutResponse> getWorkoutsByDate(
@@ -92,6 +92,15 @@ public class WorkoutController {
         return workoutService.getWorkoutProgess(
                 user.getId(),
                 exerciseId
+        );
+    }
+
+    @GetMapping("/week")
+    public List<WorkoutResponse> getWeeklyWorkouts(
+            @AuthenticationPrincipal User user
+    ) {
+        return workoutService.getWeeklyWorkouts(
+                user.getId()
         );
     }
 }

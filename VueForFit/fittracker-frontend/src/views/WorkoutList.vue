@@ -31,52 +31,8 @@
 
     </div>
 
-    <button class="btn btn-primary me-1 mb-2" @click="loadWorkouts">
-      Refresh
-    </button>
-
-    <input type="date" v-model="selectedDate" />
-
-    <!--今日kpi暫定區------START------>
-    <div class="row g-3 mb-4">
-
-        <div class="col-md-3">
-            <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <div class="text-muted">Workouts</div>
-                <h3>{{ workouts.length }}</h3>
-            </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <div class="text-muted">Sets</div>
-                <h3>{{ totalSets }}</h3>
-            </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <div class="text-muted">Reps</div>
-                <h3>{{ totalReps }}</h3>
-            </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <div class="text-muted">Volume</div>
-                <h3>{{ totalVolume }} kg</h3>
-            </div>
-            </div>
-        </div>
-
-    </div>
+    
+  
 
     <!--今日kpi暫定區------END-------->
 
@@ -91,7 +47,8 @@
         </button>
     </div> -->
 
-    <div class="btn-group mb-3">
+    <!--舊版summary取消-->
+    <!-- <div class="btn-group mb-3">
         <button
             class="btn"
             :class="selectedSummary === 'today' ? 'btn-primary' : 'btn-outline-primary'"
@@ -115,62 +72,251 @@
         >
             Exercise Progress
         </button>
-    </div>
+    </div> -->
 
-    
-    <div class="card shadow-sm mb-4" v-if="selectedSummary === 'today'">
-        <div class="card-header bg-info text-dark">
-            Insight Panel
-        </div>
+    <div class="btn-group mb-4">
 
-        <div class="card-body">
-
-            <h5>🔥 Muscle Ranking</h5>
-
-            <div v-for="[group, data] in muscleGroupSummary" :key="group">
-            <div class="d-flex justify-content-between">
-                <span>{{ group }}</span>
-                <strong>{{ data.volume }} kg</strong>
-            </div>
-            </div>
-
-            <hr>
-
-            <h5>📊 Quick Insight</h5>
-
-            <p>
-            Most trained muscle:
-            <strong>{{ topMuscle }}</strong>
-            </p>
-
-        </div>
-    </div>
-
-    
-    <div v-if="selectedSummary === 'muscle'">
-        <h3>Muscle Group Summary</h3>
-        
-        <MuscleChart
-            :labels="chartLabels"
-            :data="chartData"
-        />
-        <!-- <div
-            v-for="[group, data] in muscleGroupSummary"
-            :key="group"
+        <button
+            class="btn"
+            :class="selectedTab === 'overview'
+            ? 'btn-primary'
+            : 'btn-outline-primary'"
+            @click="selectedTab = 'overview'"
         >
-        <h4>{{ group }}</h4>
-        <p>
-            總訓練量：{{ data.volume }}kg
-        </p>
-        <p>
-            動作數：{{ data.exerciseCount }}
-        </p>
-        <hr>
+            Overview
+        </button>
+
+        <button
+            class="btn"
+            :class="selectedTab === 'weekly'
+            ? 'btn-primary'
+            : 'btn-outline-primary'"
+            @click="selectedTab = 'weekly'"
+        >
+            Weekly
+        </button>
+
+        <button
+            class="btn"
+            :class="selectedTab === 'progress'
+            ? 'btn-primary'
+            : 'btn-outline-primary'"
+            @click="selectedTab = 'progress'"
+        >
+            Progress
+        </button>
+
+    </div>
+
+    
+    <div v-if="selectedTab === 'overview'">
+     
+        <!-- <button class="btn btn-primary me-1 mb-2" @click="loadWorkouts">
+        Refresh
+        </button> -->
+        <div class="mb-3">
+            <input type="date" v-model="selectedDate" />
+        </div>
+        
+        <!--今日kpi暫定區------START------>
+        <div class="row ms-1 me-1 g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Exercises</div>
+                    <h3>{{ exerciseCount }}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Sets</div>
+                    <h3>{{ totalSets }}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Reps</div>
+                    <h3>{{ totalReps }}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Volume</div>
+                    <h3>{{ totalVolume.toLocaleString() }} kg</h3>
+                </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                    Today Summary
+            </div>
+
+            <div class="card-body" ms-1 me-1>
+
+                <h5>🔥 Muscle Ranking</h5>
+
+                <div v-for="[group, data] in muscleGroupSummary" :key="group">
+                <div class="d-flex justify-content-between">
+                    <span>{{ group }}</span>
+                    <strong>{{ data.volume.toFixed(1) }} kg</strong>
+                </div>
+                </div>
+
+                <hr>
+
+                <div>
+                    <h5>📊 Quick Insight</h5>
+                    <p>
+                        Most trained muscle:
+                        <strong>{{ topMuscle }}</strong>
+                    </p>
+                </div>
+                
+            </div>
         </div> -->
+
+
+        <div class="card shadow-sm mb-4">     
+            <div class="card-header bg-primary bg-opacity-75 text-white">
+                Muscle Chart
+            </div>
+            <div>
+                <MuscleChart
+                    :labels="chartLabels"
+                    :data="chartData"
+                />
+            </div>
+        </div>
+        
+    </div>
+
+    
+    <div v-if="selectedTab === 'weekly'">
+        
+        <!-- weeklyworkout kpi-->
+        <div class="row g-3 mb-4">
+            <h4 class="mb-3">
+                Weekly Dashboard
+            </h4>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Volume</div>
+                    <h3>{{ weeklyVolume.toLocaleString() }} kg</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Sets</div>
+                    <h3>{{ weeklySets }}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Exercises</div>
+                    <h3>{{ weeklyExerciseCount }}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Days</div>
+                    <h3>{{ trainingDays }}</h3>
+                </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <h4 class="mt-4">
+            Weekly Volume Trend
+        </h4>
+
+        <WeeklyVolumeChart
+            :labels="weeklyChartLabels"
+            :data="weeklyChartData"
+        />
+
+        <div class="card mt-4">
+
+            <div class="card-header bg-primary text-white">
+                Weekly Muscle Summary
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-hover">
+
+                <thead>
+
+                <tr>
+                    <th>Muscle Group</th>
+                    <th>Exercises</th>
+                    <th>Sets</th>
+                    <th>Volume</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr
+                    v-for="item in weeklyMuscleSummary"
+                    :key="item[0]"
+                >
+
+                    <td>
+                    {{ item[0] }}
+                    </td>
+
+                    <td>
+                    {{ item[1].exerciseCount }}
+                    </td>
+
+                    <td>
+                    {{ item[1].sets }}
+                    </td>
+
+                    <td>
+                    {{ item[1].volume.toLocaleString() }} kg
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+        
     </div>  
 
-    <div v-if="selectedSummary === 'progress'">
-
+    <div v-if="selectedTab === 'progress'">
         <h3>Exercise Progress</h3>
 
         <select
@@ -399,7 +545,7 @@
                 <th>Weight(kg)</th>
                 <th>Reps</th>
                 <th>Sets</th>
-                <th>Date&Time</th>
+                <th>Date</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -481,6 +627,7 @@ import MuscleChart from '../components/MuscleChart.vue'
 import { useRouter } from "vue-router"
 import ProgressChart from '../components/ProgressChart.vue'
 import {getRole, logout} from "../utils/auth.js"
+import WeeklyVolumeChart from '../components/WeeklyVolumeChart.vue'
 
 const router = useRouter()
 const workouts = ref([]);
@@ -488,8 +635,13 @@ const exercises = ref([]);
 const selectedMuscleGroup = ref("")
 const selectedDate = ref("")
 const editingId = ref(null)
-const selectedSummary = ref('today') 
-// 'today' | 'muscle'
+
+// 'today' | 'muscle' | 'progress'
+// 已被selectTab取代
+//const selectedSummary = ref('today') 
+
+//將selectedSummary改新版tab(today/weekly/progress)
+const selectedTab = ref('overview')
 
 const selectedExerciseId = ref(null)
 const progressData = ref([])
@@ -498,11 +650,10 @@ const userEmail = ref(
   localStorage.getItem("email")
 )
 
-// const role = ref(
-//   localStorage.getItem("role")
-// )
 const role = ref(getRole())
 const isAdmin = computed(() => role.value === "ADMIN")
+
+const weeklyWorkouts = ref([])
 
 
 const form = ref({
@@ -510,7 +661,7 @@ const form = ref({
   weight: null,
   reps: null,
   sets: null,
-  workoutDate: null
+  workoutDate: selectedDate
 });
 
 const editForm = ref({
@@ -724,11 +875,11 @@ const totalReps = computed(() => {
 
 })
 
-const exerciseCount = computed(() => {
+// const exerciseCount = computed(() => {
 
-  return workouts.value.length
+//   return workouts.value.length
 
-})
+// })
 
 const muscleGroupSummary = computed(() => {
 
@@ -737,27 +888,38 @@ const muscleGroupSummary = computed(() => {
   workouts.value.forEach(workout => {
 
     const group = workout.muscleGroup
+    const exerciseName = workout.exerciseName
 
     if (!summary[group]) {
-
       summary[group] = {
         volume: 0,
-        exerciseCount: 0
+        set: 0,
+        exerciseSet: new Set()
       }
-
     }
 
-    summary[group].volume +=
-      workout.weight *
-      workout.reps *
-      workout.sets
+    summary[group].volume += workout.weight * workout.reps * workout.sets
+    summary[group].set += workout.sets
 
-    summary[group].exerciseCount += 1
+    //summary[group].exerciseCount += 1
+    summary[group].exerciseSet.add(exerciseName)
 
   })
 
-    return Object.entries(summary)
-    .sort((a, b) =>
+  console.log(summary);
+
+  const result = Object.entries(summary).map(([group,data]) => {
+    return [
+        group,
+        {
+            volume: data.volume,
+            set: data.set,
+            exerciseCount: data.exerciseSet.size
+        }
+    ]
+  })
+
+    return result.sort((a, b) =>
       b[1].volume - a[1].volume
     )
 
@@ -771,6 +933,7 @@ const chartData = computed(() =>
   muscleGroupSummary.value.map(i => ({
     group: i[0],
     volume: i[1].volume,
+    set: i[1].set,
     exerciseCount: i[1].exerciseCount
   }))
 )
@@ -800,14 +963,6 @@ const loadProgress = async () => {
   progressData.value = response.data
 }
 
-// const createExercise = () => {
-
-//   router.push(
-//     "/admin/create-exercise"
-//   )
-
-// }
-
 const goToExerciseManagement = () => {
 
   router.push(
@@ -816,31 +971,204 @@ const goToExerciseManagement = () => {
 
 }
 
+const loadWeeklyWorkouts = async () => {
+
+  const response =
+    await http.get("/workouts/week")
+
+  weeklyWorkouts.value =
+    response.data
+}
+
+const weeklyVolume = computed(() => {
+
+  return weeklyWorkouts.value.reduce(
+    (sum, workout) =>
+      sum +
+      workout.weight *
+      workout.reps *
+      workout.sets,
+    0
+  )
+
+})
+
+const weeklySets = computed(() => {
+
+  return weeklyWorkouts.value.reduce(
+    (sum, workout) =>
+      sum + workout.sets,
+    0
+  )
+
+})
+
+const weeklyExerciseCount = computed(() => {
+  const exerciseNames = weeklyWorkouts.value.map(w => w.exerciseName)
+
+  return new Set(exerciseNames).size
+
+})
+
+const trainingDays = computed(() => {
+
+  return new Set(
+    weeklyWorkouts.value.map(
+      workout =>
+        workout.workoutDate
+    )
+  ).size
+
+})
+
+
+const weeklyVolumeByDay = computed(() => {
+
+  const result = {
+    Mon: 0,
+    Tue: 0,
+    Wed: 0,
+    Thu: 0,
+    Fri: 0,
+    Sat: 0,
+    Sun: 0
+  }
+
+  weeklyWorkouts.value.forEach(workout => {
+
+    const date = new Date(
+        workout.workoutDate + "T00:00:00"
+    )
+
+    const weekday =
+      ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      [date.getDay()]
+
+    result[weekday] +=
+      workout.weight *
+      workout.reps *
+      workout.sets
+
+  })
+
+  return result
+
+})
+
+const weeklyChartLabels = computed(() => [
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+  "Sun"
+])
+
+const weeklyChartData = computed(() => [
+
+  weeklyVolumeByDay.value.Mon,
+  weeklyVolumeByDay.value.Tue,
+  weeklyVolumeByDay.value.Wed,
+  weeklyVolumeByDay.value.Thu,
+  weeklyVolumeByDay.value.Fri,
+  weeklyVolumeByDay.value.Sat,
+  weeklyVolumeByDay.value.Sun
+
+])
+
+
+const weeklyMuscleSummary = computed(() => {
+
+  const summary = {}
+
+  weeklyWorkouts.value.forEach(workout => {
+
+    const group = workout.muscleGroup
+    const exerciseName = workout.exerciseName
+
+    if (!summary[group]) {
+      summary[group] = {
+        volume: 0,
+        sets: 0,
+        exerciseSet: new Set()
+      }
+    }
+
+    summary[group].volume += workout.weight * workout.reps * workout.sets
+    summary[group].sets += workout.sets
+    summary[group].exerciseSet.add(exerciseName)
+
+  })
+
+  const result = Object.entries(summary).map(([group,data]) => {
+    return [
+        group,
+        {
+            volume: data.volume,
+            sets: data.sets,
+            exerciseCount: data.exerciseSet.size
+        }
+    ]
+  })
+
+    return result.sort((a, b) =>
+      b[1].volume - a[1].volume
+    )
+
+})
+
+// watch(weeklyMuscleSummary, () => {
+//   console.log(weeklyMuscleSummary.value)
+// })
+
+const highestVolumeDay = computed(() => {
+
+  return Object.entries(
+    weeklyVolumeByDay.value
+  ).reduce(
+    (max, current) =>
+      current[1] > max[1]
+        ? current
+        : max
+  )[0]
+
+})
+
+//計算不重複動作數
+const exerciseCount = computed(() => {
+  const exerciseNames = workouts.value.map(w => w.exerciseName)
+
+  return new Set(exerciseNames).size
+
+})
+
+
+
+// watch(weeklyVolumeByDay, () => {
+//   console.log(weeklyVolumeByDay.value)
+// })
+
 watch(
   selectedExerciseId,
-  loadProgress
+  loadProgress,
 )
 
-
+watch(selectedTab, async () => {
+  await Promise.all([loadWeeklyWorkouts(), loadProgress()])
+})
 
 onMounted(() => {
   selectedDate.value = new Date().toISOString().slice(0, 10)
   loadWorkouts();
   loadExercises(); 
+  loadWeeklyWorkouts()
 });
 
 watch(selectedDate, () => {
   loadWorkouts();
 });
 
-// const logout = () => {
-
-//   localStorage.removeItem("token")
-//   localStorage.removeItem("email")
-//   localStorage.removeItem("role")
-
-//   router.push("/")
-// }
 
 
 

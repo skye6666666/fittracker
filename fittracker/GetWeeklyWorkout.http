@@ -1,0 +1,2 @@
+GET http://localhost:8080/api/workouts/week
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODE2NjkyNjYsImV4cCI6MTc4MTY3Mjg2Nn0.YJgOTUIqdJKYwXw4AGXnre0gZVSHnV95EZy_SYCTvz8

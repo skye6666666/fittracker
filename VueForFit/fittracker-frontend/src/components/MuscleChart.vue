@@ -44,10 +44,8 @@ const renderChart = async () => {
         {
           label: 'Training Volume (kg)',
           data: props.data.map(d => d.volume),
-        //   backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        //   hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(13, 66, 174, 0.7)',
-          hoverBackgroundColor: 'rgba(13, 66, 174, 1)',
+          backgroundColor: 'rgba(255, 115, 21, 0.5)',
+          hoverBackgroundColor: 'rgba(255, 115, 21, 1)',
           borderRadius: 8
         }
       ]
@@ -68,7 +66,8 @@ const renderChart = async () => {
                     
                     return [
                         `Volume: ${data.volume.toLocaleString()} kg`,
-                        `Exercises: ${data.exerciseCount}`
+                        `Exercises: ${data.exerciseCount}`,
+                        `Sets: ${data.set}`
                     ]
                 }
             }

@@ -72,7 +72,7 @@ public class WorkoutService {
     }
 
     //一開始開發練習拿來查全部(不分類) 現在沒有用到
-    public List<WorkoutResponse> getMyWorkouts(Long userId) {
+    public List<WorkoutResponse> getAllMyWorkouts(Long userId) {
 
         //String email = jwtUtil.extractEmail(token);
 
@@ -195,5 +195,27 @@ public class WorkoutService {
 
         return toResponse(workout);
 
+    }
+
+    public List<WorkoutResponse> getWeeklyWorkouts(
+            Long userId
+    ) {
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate startOfWeek =
+                today.minusDays(
+                        today.getDayOfWeek().getValue() - 1
+                );
+
+        return workoutRepo
+                .findByUserId(userId)
+                .stream()
+                .filter(workout ->
+                        !workout.getWorkoutDate()
+                                .isBefore(startOfWeek)
+                )
+                .map(this::toResponse)
+                .toList();
     }
 }
