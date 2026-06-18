@@ -5,15 +5,8 @@ import { getRole } from "../utils/auth"
 import CreateExerciseView from "../views/CreateExerciseView.vue"
 import ExerciseManagementView from "../views/ExerciseManagementView.vue"
 import { parseJwt, logout } from "../utils/auth"
-import Register from "../components/Register.vue"
-
-const routes = [
-  { path: "/", component: LoginView },
-  { path: "/workouts", component: WorkoutList, 
-    meta: {
-      requiresAuth: true
-    }}
-]
+import Register from "../views/Register.vue"
+import ProfileView from "../views/ProfileView.vue"
 
 // const router = createRouter({
 //   history: createWebHistory(),
@@ -23,6 +16,11 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+    path: '/',
+    redirect: '/login'
+    },
+
     {
       path: "/login",
       component: LoginView
@@ -59,6 +57,14 @@ const router = createRouter({
       path: '/register',
       component: Register
     }
+    ,
+    {
+      path: "/profile",
+      component: ProfileView,
+      meta: {
+        requiresAuth: true
+      }
+    }
   ]
 })
 
@@ -71,6 +77,7 @@ router.beforeEach((to) => {
   if (to.path === "/login") {
     return true
   }
+  
 
   //沒token
   if (to.meta.requiresAuth && !token) {
@@ -107,6 +114,14 @@ router.beforeEach((to) => {
     to.path === "/"
   ){
     return "/login"
+  }
+
+  if (
+    to.path === "/register" &&
+    token &&
+    !isTokenExpired()
+  ) {
+    return "/workouts"
   }
 
   

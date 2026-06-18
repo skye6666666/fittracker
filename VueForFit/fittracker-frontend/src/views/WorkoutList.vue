@@ -15,6 +15,13 @@
 
         <div class="d-flex gap-2">
             <button 
+                class="btn btn-outline-success"
+                 @click="goToProfile"
+            >
+                Profile
+            </button>
+
+            <button 
                 class="btn btn-outline-primary"
                 v-if="isAdmin" @click="goToExerciseManagement"
             >
@@ -169,18 +176,21 @@
                 <div class="card-header bg-secondary text-white">
                     Add Workout
                 </div>
-                <div class="text-muted mb-2">
+                <!-- <div class="text-muted mb-2">
                     Record your training session
-                </div>
+                </div> -->
 
                 <div>
-                    <label>Workout Date</label>
-
-                    <input
+                    
+                    <div class="d-flex justify-content-center">
+                        <label class="mt-2 me-3">Workout Date</label>
+                        <input
                         type="date"
                         v-model="form.workoutDate"
-                        class="form-control"
-                    />
+                        class="form-control w-25 mt-1"
+                        />
+                    </div>
+                    
                 </div>
 
                 <div class="card-body">
@@ -1159,6 +1169,14 @@ const getVolumeShare = (volume) => {
     weeklyVolume.value *
     100
   ).toFixed(1)
+
+}
+
+const goToProfile = () => {
+
+  router.push(
+    "/profile"
+  )
 
 }
 

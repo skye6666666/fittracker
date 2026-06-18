@@ -30,7 +30,7 @@ import { ref } from "vue";
 import http from "../api/http";
 import { useRouter } from "vue-router"
 import { parseJwt } from "../utils/auth.js"
-import Register from "../components/Register.vue";
+import Register from "./Register.vue";
 
 const router = useRouter()
 

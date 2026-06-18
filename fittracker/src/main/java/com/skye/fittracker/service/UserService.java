@@ -1,9 +1,6 @@
 package com.skye.fittracker.service;
 
-import com.skye.fittracker.dto.LoginRequest;
-import com.skye.fittracker.dto.LoginResponse;
-import com.skye.fittracker.dto.UserRegisterRequest;
-import com.skye.fittracker.dto.UserResponse;
+import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.enums.Role;
 import com.skye.fittracker.util.JwtUtil;
@@ -68,5 +65,18 @@ public class UserService {
 
 
         return new LoginResponse(token);
+    }
+
+    public UserProfileResponse getMyProfile(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        return new UserProfileResponse(
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                user.getCreatedAt()
+        );
     }
 }

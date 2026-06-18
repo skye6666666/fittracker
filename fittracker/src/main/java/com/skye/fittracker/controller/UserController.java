@@ -3,6 +3,7 @@ package com.skye.fittracker.controller;
 import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,13 @@ public class UserController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return userService.login(request);
+    }
+
+    @GetMapping("/me")
+    public UserProfileResponse getMyProfile(
+            @AuthenticationPrincipal User user
+    ) {
+        return userService.getMyProfile(user.getId());
     }
 
 }
