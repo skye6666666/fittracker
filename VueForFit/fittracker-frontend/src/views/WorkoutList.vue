@@ -31,48 +31,6 @@
 
     </div>
 
-    
-  
-
-    <!--今日kpi暫定區------END-------->
-
-    <!--舊按鈕-->
-    <!-- <div style="margin-bottom: 10px;">
-        <button class="btn btn-primary" @click="selectedSummary = 'today'">
-            Today Summary
-        </button>
-        
-        <button class="btn btn-primary" @click="selectedSummary = 'muscle'">
-            Muscle Group
-        </button>
-    </div> -->
-
-    <!--舊版summary取消-->
-    <!-- <div class="btn-group mb-3">
-        <button
-            class="btn"
-            :class="selectedSummary === 'today' ? 'btn-primary' : 'btn-outline-primary'"
-            @click="selectedSummary = 'today'"
-        >
-            Today Summary
-        </button>
-
-        <button
-            class="btn"
-            :class="selectedSummary === 'muscle' ? 'btn-primary' : 'btn-outline-primary'"
-            @click="selectedSummary = 'muscle'"
-        >
-            Muscle Group
-        </button>
-
-        <button
-            class="btn"
-            :class="selectedSummary === 'progress' ? 'btn-primary' : 'btn-outline-primary'"
-            @click="selectedSummary = 'progress'"
-        >
-            Exercise Progress
-        </button>
-    </div> -->
 
     <div class="btn-group mb-4">
 
@@ -118,7 +76,7 @@
             <input type="date" v-model="selectedDate" />
         </div>
         
-        <!--今日kpi暫定區------START------>
+        <!--今日kpi------START------>
         <div class="row ms-1 me-1 g-3 mb-4">
 
             <div class="col-md-3">
@@ -158,6 +116,7 @@
             </div>
 
         </div>
+        <!--今日kpi------END------>
 
         <!-- <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white">
@@ -198,6 +157,215 @@
                     :labels="chartLabels"
                     :data="chartData"
                 />
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <div class="card shadow-sm mb-4">
+                <!-- Header -->
+                <div class="card-header bg-secondary text-white">
+                    Add Workout
+                </div>
+                <div class="text-muted mb-2">
+                    Record your training session
+                </div>
+
+                <div>
+                    <label>Workout Date</label>
+
+                    <input
+                        type="date"
+                        v-model="form.workoutDate"
+                        class="form-control"
+                    />
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Muscle Group + Exercise + Badge -->
+                    <div class="row mb-3 g-3">
+
+                        <!-- Muscle Group -->
+                        <div class="col-md-4">
+                            <label class="form-label">Muscle Group</label>
+
+                            <select class="form-select" v-model="selectedMuscleGroup">
+                                <option value="">請選擇肌群</option>
+
+                                <option
+                                    v-for="group in muscleGroups"
+                                    :key="group"
+                                    :value="group"
+                                    >
+                                    {{ group }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Exercise -->
+                        <div class="col-md-4">
+                            <label class="form-label">Exercise</label>
+
+                            <select class="form-select" v-model.number="form.exerciseId">
+                                <option value="null">
+                                    {{
+                                        selectedMuscleGroup
+                                        ? "請選擇動作"
+                                        : "請先選擇肌群"
+                                    }}
+                                </option>
+
+                                <option
+                                    v-for="exercise in filteredExercises"
+                                    :key="exercise.id"
+                                    :value="exercise.id"
+                                    >
+                                    {{ exercise.description }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Selected Exercise Badge -->
+                        <div class="col-md-4 d-flex align-items-end">
+                            <span
+                                v-if="selectedExercise"
+                                class="badge bg-secondary fs-6 p-2"
+                            >
+                                <strong>英文名稱：</strong>
+                                {{ selectedExercise.name }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Input Row -->
+                    <div class="row mb-3 g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Weight (kg)</label>
+                            <input
+                                class="form-control"
+                                v-model.number="form.weight"
+                                type="number"
+                                placeholder="Enter weight"
+                            />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Reps</label>
+                            <input
+                                class="form-control"
+                                v-model.number="form.reps"
+                                type="number"
+                                placeholder="Enter reps"
+                            />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Sets</label>
+                            <input
+                                class="form-control"
+                                v-model.number="form.sets"
+                                type="number"
+                                placeholder="Enter sets"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Button -->
+                    <div class="d-grid">
+                        <button
+                        class="btn btn-success btn-lg"
+                        @click="createWorkout"
+                        >
+                        Add
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Muscle Group</th>
+                            <th>Weight(kg)</th>
+                            <th>Reps</th>
+                            <th>Sets</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr
+                            v-for="workout in workouts"
+                            :key="workout.id"
+                        >
+                            <td>{{ workout.exerciseName }}</td>
+                            <td>
+                                <span class="badge bg-primary">
+                                    {{ workout.muscleGroup }}
+                                </span>
+                            </td>
+                                                                                
+                            <td v-if="editingId !== workout.id">
+                                {{ workout.weight }}
+                            </td>
+                            <td v-else>
+                                <input v-model.number="editForm.weight" class="form-control form-control-sm" style="width: 60px;"/>
+                            </td>
+
+                            <td v-if="editingId !== workout.id" >
+                                {{ workout.reps }}
+                            </td>
+                            <td v-else>
+                                <input v-model.number="editForm.reps" class="form-control form-control-sm" style="width: 60px;"/>
+                            </td>
+
+                            <td v-if="editingId !== workout.id">
+                                {{ workout.sets }}
+                            </td>
+                            <td v-else>
+                                <input v-model.number="editForm.sets" class="form-control form-control-sm" style="width: 60px;"/>
+                            </td>
+                            
+                            <td>
+                                {{ workout.workoutDate }}
+                            </td>
+
+
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <template v-if="editingId !== workout.id">
+                                        <button class="btn btn-warning" @click="startEdit(workout)">
+                                            Edit
+                                        </button>
+
+                                        <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
+                                            Delete
+                                        </button>
+                                    </template>
+
+                                    <template v-else>
+                                        <button class="btn btn-success" @click="saveEdit(workout.id)">
+                                            Save
+                                        </button>
+
+                                        <button class="btn btn-secondary" @click="cancelEdit">
+                                            Cancel
+                                        </button>
+                                    </template>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         
@@ -262,7 +430,7 @@
 
         <div class="card mt-4">
 
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-primary bg-opacity-75 text-white">
                 Weekly Muscle Summary
             </div>
 
@@ -408,214 +576,7 @@
     </div> -->
 
 
-    <div class="container mt-4">
-        <div class="card shadow-sm mb-4">
-            <!-- Header -->
-            <div class="card-header bg-secondary text-white">
-                Add Workout
-            </div>
-            <div class="text-muted mb-2">
-                Record your training session
-            </div>
 
-            <div>
-                <label>Workout Date</label>
-
-                <input
-                    type="date"
-                    v-model="form.workoutDate"
-                    class="form-control"
-                />
-            </div>
-
-            <div class="card-body">
-
-                <!-- Muscle Group + Exercise + Badge -->
-                <div class="row mb-3 g-3">
-
-                    <!-- Muscle Group -->
-                    <div class="col-md-4">
-                        <label class="form-label">Muscle Group</label>
-
-                        <select class="form-select" v-model="selectedMuscleGroup">
-                            <option value="">請選擇肌群</option>
-
-                            <option
-                                v-for="group in muscleGroups"
-                                :key="group"
-                                :value="group"
-                                >
-                                {{ group }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Exercise -->
-                    <div class="col-md-4">
-                        <label class="form-label">Exercise</label>
-
-                        <select class="form-select" v-model.number="form.exerciseId">
-                            <option value="null">
-                                {{
-                                    selectedMuscleGroup
-                                    ? "請選擇動作"
-                                    : "請先選擇肌群"
-                                }}
-                            </option>
-
-                            <option
-                                v-for="exercise in filteredExercises"
-                                :key="exercise.id"
-                                :value="exercise.id"
-                                >
-                                {{ exercise.description }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Selected Exercise Badge -->
-                    <div class="col-md-4 d-flex align-items-end">
-                        <span
-                            v-if="selectedExercise"
-                            class="badge bg-secondary fs-6 p-2"
-                        >
-                            <strong>英文名稱：</strong>
-                            {{ selectedExercise.name }}
-                        </span>
-                    </div>
-
-                </div>
-
-                <!-- Input Row -->
-                <div class="row mb-3 g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Weight (kg)</label>
-                        <input
-                            class="form-control"
-                            v-model.number="form.weight"
-                            type="number"
-                            placeholder="Enter weight"
-                        />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Reps</label>
-                        <input
-                            class="form-control"
-                            v-model.number="form.reps"
-                            type="number"
-                            placeholder="Enter reps"
-                        />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Sets</label>
-                        <input
-                            class="form-control"
-                            v-model.number="form.sets"
-                            type="number"
-                            placeholder="Enter sets"
-                        />
-                    </div>
-                </div>
-
-                <!-- Button -->
-                <div class="d-grid">
-                    <button
-                    class="btn btn-success btn-lg"
-                    @click="createWorkout"
-                    >
-                    Add
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-
-            <table class="table table-hover align-middle mb-0">
-            <thead>
-            <tr>
-                <th>Exercise</th>
-                <th>Muscle Group</th>
-                <th>Weight(kg)</th>
-                <th>Reps</th>
-                <th>Sets</th>
-                <th>Date</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr
-                v-for="workout in workouts"
-                :key="workout.id"
-            >
-                <td>{{ workout.exerciseName }}</td>
-                <td>
-                    <span class="badge bg-primary">
-                        {{ workout.muscleGroup }}
-                    </span>
-                </td>
-                                                                    
-                <td v-if="editingId !== workout.id">
-                    {{ workout.weight }}
-                </td>
-                <td v-else>
-                    <input v-model.number="editForm.weight" class="form-control form-control-sm" style="width: 60px;"/>
-                </td>
-
-                <td v-if="editingId !== workout.id" >
-                    {{ workout.reps }}
-                </td>
-                <td v-else>
-                    <input v-model.number="editForm.reps" class="form-control form-control-sm" style="width: 60px;"/>
-                </td>
-
-                <td v-if="editingId !== workout.id">
-                    {{ workout.sets }}
-                </td>
-                <td v-else>
-                    <input v-model.number="editForm.sets" class="form-control form-control-sm" style="width: 60px;"/>
-                </td>
-                
-                <td>
-                    {{ workout.workoutDate }}
-                </td>
-
-
-                <td>
-                    <div class="d-flex gap-1">
-                        <template v-if="editingId !== workout.id">
-                            <button class="btn btn-warning" @click="startEdit(workout)">
-                                Edit
-                            </button>
-
-                            <button class="btn btn-danger" @click="deleteWorkout(workout.id)">
-                                Delete
-                            </button>
-                        </template>
-
-                        <template v-else>
-                            <button class="btn btn-success" @click="saveEdit(workout.id)">
-                                Save
-                            </button>
-
-                            <button class="btn btn-secondary" @click="cancelEdit">
-                                Cancel
-                            </button>
-                        </template>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-            </table>
-        </div>
-    </div>
 
   </div>
 </template>

@@ -44,8 +44,8 @@ const renderChart = async () => {
         {
           label: 'Training Volume (kg)',
           data: props.data.map(d => d.volume),
-          backgroundColor: 'rgba(255, 115, 21, 0.5)',
-          hoverBackgroundColor: 'rgba(255, 115, 21, 1)',
+          backgroundColor: 'rgba(236, 141, 46, 0.6)',
+          hoverBackgroundColor: 'rgba(236, 141, 46, 1)',
           borderRadius: 8
         }
       ]

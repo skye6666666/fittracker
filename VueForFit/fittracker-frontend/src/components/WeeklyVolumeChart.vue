@@ -64,6 +64,18 @@ const renderChart = () => {
           legend: {
             display: true
           }
+        },
+        scales: {
+            y: {
+                ticks: {
+                    callback: function(value) {
+                        if (value >= 1000) {
+                            return (value / 1000) + "k"
+                        }
+                        return value
+                    }
+                }
+            }
         }
       }
     }
