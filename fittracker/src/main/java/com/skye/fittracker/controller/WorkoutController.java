@@ -7,6 +7,7 @@ import com.skye.fittracker.dto.WorkoutUpdateRequest;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.entity.WorkoutRecord;
 import com.skye.fittracker.service.WorkoutService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class WorkoutController {
     @PostMapping
     public WorkoutResponse createWorkout(
             @AuthenticationPrincipal User user, //@RequestHeader("Authorization") String authHeader,
-            @RequestBody WorkoutCreateRequest request
+            @Valid @RequestBody WorkoutCreateRequest request
     ) {
         //String token = authHeader.substring(7); // 去掉 "Bearer "
         return workoutService.createWorkout(user.getId(), request);
@@ -40,12 +41,12 @@ public class WorkoutController {
 //        return workoutService.getMyWorkouts(token);
 //    }
 
-    @GetMapping("/all")
-    public List<WorkoutResponse> getAllMyWorkouts(
-            @AuthenticationPrincipal User user
-    ) {
-        return workoutService.getAllMyWorkouts(user.getId());
-    }
+//    @GetMapping("/all")
+//    public List<WorkoutResponse> getAllMyWorkouts(
+//            @AuthenticationPrincipal User user
+//    ) {
+//        return workoutService.getAllMyWorkouts(user.getId());
+//    }
 
     @GetMapping
     public List<WorkoutResponse> getWorkoutsByDate(
@@ -73,7 +74,7 @@ public class WorkoutController {
     public WorkoutResponse updateWorkout(
             @AuthenticationPrincipal User user,
             @PathVariable Long id,
-            @RequestBody WorkoutUpdateRequest request
+            @Valid @RequestBody WorkoutUpdateRequest request
     ) {
 
         return workoutService.updateWorkout(

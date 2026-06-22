@@ -21,10 +21,12 @@ http.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      if (error.response.status === 401||error.response.status === 403) {
+      if (error.response.status === 401) {
         alert("登入已過期，請重新登入");
         logout()
                 
+      } else if (error.response.status === 403){
+        alert(error.response.data?.message || "操作失敗");
       } else if (error.response.status >= 500) {
         alert("伺服器錯誤，請稍後再試");
       }

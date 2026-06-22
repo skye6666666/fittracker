@@ -189,6 +189,7 @@
                         v-model="form.workoutDate"
                         class="form-control w-25 mt-1"
                         />
+
                     </div>
                     
                 </div>
@@ -295,9 +296,33 @@
                     </div>
 
                 </div>
+                <div
+                    v-if="errorMessage"
+                    class="alert alert-danger"
+                    >
+                    {{ errorMessage }}
+                </div>
+                <div
+                    v-if="successMessage"
+                    class="alert alert-success"
+                    >
+                    {{ successMessage }}
+                </div>
             </div>
         </div>
 
+        <div
+            v-if="errorMessage2"
+            class="alert alert-danger"
+            >
+            {{ errorMessage2 }}
+        </div>
+        <div
+            v-if="successMessage2"
+            class="alert alert-success"
+            >
+            {{ successMessage2 }}
+        </div>
         
         <div class="card shadow-sm">
             <div class="card-body p-0">
@@ -644,6 +669,10 @@ const exercises = ref([]);
 const selectedMuscleGroup = ref("")
 const selectedDate = ref("")
 const editingId = ref(null)
+const errorMessage = ref("")
+const successMessage = ref("")
+const errorMessage2 = ref("")
+const successMessage2 = ref("")
 
 // 'today' | 'muscle' | 'progress'
 // 已被selectTab取代
@@ -666,17 +695,17 @@ const weeklyWorkouts = ref([])
 
 
 const form = ref({
-  exerciseId: null,
-  weight: null,
-  reps: null,
-  sets: null,
+  exerciseId: "",
+  weight: "",
+  reps: "",
+  sets: "",
   workoutDate: selectedDate
 });
 
 const editForm = ref({
-  weight: null,
-  reps: null,
-  sets: null
+  weight: "",
+  reps: "",
+  sets: ""
 })
 
 
@@ -743,12 +772,31 @@ const loadWorkouts = async () => {
 };
 
 const createWorkout = async () => {
-console.log(form.value)
+    console.log(form.value)
+    if (
+        !form.value.exerciseId ||
+        !form.value.weight ||
+        !form.value.reps ||
+        !form.value.sets ||
+        !form.value.workoutDate
+    ) {
+        errorMessage.value = "所有欄位皆為必填"
+        return
+    }
 
   try {
+
     await http.post("/workouts", form.value);
 
-    alert("新增成功");
+    //alert("新增成功");
+    successMessage.value =
+        "Workout added successfully"
+
+    errorMessage.value = ""
+
+    setTimeout(() => {
+    successMessage.value = ""
+    }, 3000)
 
     await loadWorkouts(); // refresh list
 
@@ -812,6 +860,15 @@ const startEdit = (workout) => {
 
 const saveEdit = async (id) => {
 
+    if (
+        !editForm.value.weight ||
+        !editForm.value.reps ||
+        !editForm.value.sets
+    ) {
+        errorMessage2.value = "所有欄位皆為必填"
+        return
+    }
+
   try {
 
     await http.put(
@@ -819,7 +876,16 @@ const saveEdit = async (id) => {
       editForm.value
     )
 
-    alert("修改成功")
+    //alert("修改成功")
+    successMessage2.value =
+        "Workout saved successfully"
+
+    errorMessage2.value = ""
+
+    setTimeout(() => {
+    successMessage2.value = ""
+    }, 3000)
+
 
     editingId.value = null
 
