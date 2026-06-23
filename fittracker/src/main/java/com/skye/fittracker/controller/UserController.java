@@ -3,6 +3,7 @@ package com.skye.fittracker.controller;
 import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,13 @@ public class UserController {
             @AuthenticationPrincipal User user
     ) {
         return userService.getMyProfile(user.getId());
+    }
+
+    @PutMapping("/password")
+    public String changePassword(@AuthenticationPrincipal User user,
+                                 @Valid @RequestBody ChangePasswordRequest request){
+        userService.changePassword(user.getId(), request);
+        return "Password changed Successfully!";
     }
 
 }

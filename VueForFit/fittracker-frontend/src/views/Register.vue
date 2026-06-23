@@ -32,8 +32,11 @@
         />
     </div>
 
-    <button @click="register">
+    <button class="btn btn-success me-2" @click="register">
       Register
+    </button>
+    <button class="btn btn-warning" @click="cancelRegister">
+      Back
     </button>
   </div>
 </template>
@@ -76,7 +79,12 @@ const register = async () => {
         alert(error.response?.data || '註冊失敗')
         
     }
+}
 
-  
+const cancelRegister = () => {
+
+    router.push(
+    "/login"
+    )
 }
 </script>

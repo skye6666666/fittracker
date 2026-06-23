@@ -82,6 +82,9 @@ const login = async () => {
     console.error(error);
 
     alert(error.response?.data?.message || "登入失敗");
+
+  } finally{
+    loading.value = false;
   }
 };
 

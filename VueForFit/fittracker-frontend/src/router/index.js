@@ -7,6 +7,7 @@ import ExerciseManagementView from "../views/ExerciseManagementView.vue"
 import { parseJwt, logout } from "../utils/auth"
 import Register from "../views/Register.vue"
 import ProfileView from "../views/ProfileView.vue"
+import changePasswordView from "../views/changePasswordView.vue"
 
 // const router = createRouter({
 //   history: createWebHistory(),
@@ -63,6 +64,14 @@ const router = createRouter({
       component: ProfileView,
       meta: {
         requiresAuth: true
+      }
+    }
+    ,
+    {
+      path: "/changePassword",
+      component: changePasswordView,
+      meta: {
+        requiresAuth: true,
       }
     }
   ]

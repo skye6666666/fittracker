@@ -79,4 +79,34 @@ public class UserService {
                 user.getCreatedAt()
         );
     }
+
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+
+        User user = userRepository.findById(userId).orElseThrow(()
+                -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+//        if(request.getNewPassword().length() < 6){
+//            throw new RuntimeException(
+//                    "Password must be at least 6 characters");
+//        }
+
+        if(!request.getNewPassword().equals(request.getConfirmPassword())){
+            throw new RuntimeException(
+                    "Passwords do not match");
+        }
+
+        if(passwordEncoder.matches(request.getNewPassword(),user.getPassword())) {
+            throw new RuntimeException(
+                    "New password cannot be same as current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+
+    }
 }

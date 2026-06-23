@@ -11,9 +11,9 @@
         <p><strong>Member Since:</strong> {{profile.createdAt}} </p>
 
         <div>
-            <!-- <button class="btn btn-success me-3" @click="createExercise">
-                Create
-            </button> -->
+            <button class="btn btn-success me-3" @click="changePassword">
+                Change password
+            </button>
 
             <button class="btn btn-secondary" @click="backToWorkout">
                 Back
@@ -52,17 +52,15 @@ onMounted(async () => {
 
 const backToWorkout = () => {
 
-    // form.value = {
-    //   name: "",
-    //   description: "",
-    //   muscleGroup: ""
-    // }
-
     router.push(
     "/workouts"
     )
+}
 
-
+const changePassword = () => {
+    router.push(
+        "/changePassword"
+    )
 }
 
 
