@@ -19,7 +19,8 @@ public class EmailService {
     ) {
 
         String verifyUrl =
-                "http://localhost:8080/api/users/verify?token="
+//                "http://localhost:8080/api/users/verify?token="
+                "https://fittracker.vercel.app/verify?token="
                         + token;
 
         SimpleMailMessage message =
