@@ -5,6 +5,4 @@ target/
 
 logs/
 
-application.properties
-
 .DS_Store
