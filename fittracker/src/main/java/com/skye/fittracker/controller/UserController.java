@@ -42,4 +42,10 @@ public class UserController {
         return "Password changed Successfully!";
     }
 
+    @GetMapping("/verify")
+    public String verifyEmail(@RequestParam String token) {
+        userService.verifyEmail(token);
+        return "Email verified successfully";
+    }
+
 }

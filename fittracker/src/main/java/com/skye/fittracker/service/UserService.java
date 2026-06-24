@@ -2,13 +2,16 @@ package com.skye.fittracker.service;
 
 import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
+import com.skye.fittracker.entity.VerificationToken;
 import com.skye.fittracker.enums.Role;
 import com.skye.fittracker.util.JwtUtil;
 import com.skye.fittracker.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.skye.fittracker.repository.VerificationTokenRepository;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -16,11 +19,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, VerificationTokenRepository verificationTokenRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.emailService = emailService;
     }
 
     public UserResponse register(UserRegisterRequest request) {
@@ -40,9 +47,28 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         user.setRole(Role.USER);
-        user.setEnabled(true);
+        user.setEnabled(false);
 
         User saved = userRepository.save(user);
+
+        String token = UUID.randomUUID().toString();
+
+        VerificationToken verificationToken = new VerificationToken();
+
+        verificationToken.setToken(token);
+        verificationToken.setUser(saved);
+
+        verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1));
+
+        verificationTokenRepository.save(verificationToken);
+//        System.out.println(
+//                "Verification Token = " + token
+//        );
+
+        emailService.sendVerificationEmail(
+                saved.getEmail(),
+                token
+        );
 
         return new UserResponse(saved.getId(), saved.getUsername(),
                 saved.getEmail(), saved.getCreatedAt());
@@ -53,9 +79,9 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-//        if(!user.isEnabled()){
-//            throw new RuntimeException("Please verify your email");
-//        }
+        if(!user.isEnabled()){
+            throw new RuntimeException("Please verify your email");
+        }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
@@ -107,6 +133,31 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
-
     }
+
+    public void verifyEmail(String token) {
+
+        VerificationToken verificationToken =
+                verificationTokenRepository
+                        .findByToken(token)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Invalid token"));
+
+        if (verificationToken.getExpiryDate()
+                .isBefore(LocalDateTime.now())) {
+
+            throw new RuntimeException("Token expired");
+        }
+
+        User user =
+                verificationToken.getUser();
+
+        user.setEnabled(true);
+
+        userRepository.save(user);
+
+        verificationTokenRepository.delete(verificationToken);
+    }
+
 }

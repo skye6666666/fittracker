@@ -12,7 +12,7 @@
 
         <div>
             <button class="btn btn-success me-3" @click="changePassword">
-                Change password
+                Change Password
             </button>
 
             <button class="btn btn-secondary" @click="backToWorkout">

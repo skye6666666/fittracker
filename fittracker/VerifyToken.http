@@ -1,0 +1,1 @@
+GET http://localhost:8080/api/users/verify?token=0dddf7d4-e72f-4ad9-9df3-aaa140131d01
