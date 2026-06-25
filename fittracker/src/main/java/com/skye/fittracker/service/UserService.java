@@ -47,28 +47,27 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         user.setRole(Role.USER);
-        user.setEnabled(false);
+        user.setEnabled(true);
 
         User saved = userRepository.save(user);
 
-        String token = UUID.randomUUID().toString();
+//因上線雲端無法寄送email，因此先拿掉註冊寄驗證信功能
+//        String token = UUID.randomUUID().toString();
+//
+//        VerificationToken verificationToken = new VerificationToken();
+//
+//        verificationToken.setToken(token);
+//        verificationToken.setUser(saved);
+//
+//        verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1));
 
-        VerificationToken verificationToken = new VerificationToken();
+//        verificationTokenRepository.save(verificationToken);
 
-        verificationToken.setToken(token);
-        verificationToken.setUser(saved);
-
-        verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1));
-
-        verificationTokenRepository.save(verificationToken);
-//        System.out.println(
-//                "Verification Token = " + token
+//
+//        emailService.sendVerificationEmail(
+//                saved.getEmail(),
+//                token
 //        );
-
-        emailService.sendVerificationEmail(
-                saved.getEmail(),
-                token
-        );
 
         return new UserResponse(saved.getId(), saved.getUsername(),
                 saved.getEmail(), saved.getCreatedAt());
