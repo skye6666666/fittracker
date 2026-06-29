@@ -15,6 +15,6 @@ public class ProgressDto {
 
     private Double estimatedOneRm;
 
-    //private Double volume;
+    private Double volume;
 
 }

@@ -1,28 +1,72 @@
 <template>
   <div class="d-flex justify-content-center mb-3">
 
-    <label class="form-label mt-2 me-3">
+    <!-- <label class="form-label mt-2 me-3">
         Chart Type
-    </label>
+    </label> -->
 
-    <select
-        class="form-select"
-        style="max-width:250px"
-        v-model="chartType">
+    <div class="mb-3">
 
-        <option value="weight">
+      <div class="text-center mb-3">
+
+          <span class="text-secondary fw-semibold">
+              Analysis
+          </span>
+
+      </div>
+
+      <ul class="nav nav-tabs justify-content-center">
+
+        <li class="nav-item me-2">
+
+          <button
+            class="nav-link"
+            :class="{ active: chartType === 'weight' }"
+            @click="chartType = 'weight'">
+
             Weight
-        </option>
 
-        <option value="oneRm">
+          </button>
+
+        </li>
+
+        <li class="nav-item me-2">
+
+          <button
+            class="nav-link"
+            :class="{ active: chartType === 'oneRm' }"
+            @click="chartType = 'oneRm'">
+
             Estimated 1RM
-        </option>
 
-    </select>
+          </button>
+
+        </li>
+
+        <li class="nav-item">
+
+          <button
+            class="nav-link"
+            :class="{ active: chartType === 'volume' }"
+            @click="chartType = 'volume'">
+
+            Volume
+
+          </button>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+    
+
 
   </div>
 
-  <div style="height: 400px;">
+
+  <div class="card shadow-lg mt-4 mb-4" style="height: 400px;">
     <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
@@ -65,15 +109,34 @@ let chartInstance = null
 
 const chartType = ref("weight")
 
-const chartLabel = computed(() => {
+const chartConfig = {
 
-    return chartType.value === "weight"
+    weight: {
 
-        ? "Weight (kg)"
+        label: "Weight (kg)",
 
-        : "Estimated 1RM (kg)"
+        yAxis: "Weight (kg)"
 
-})
+    },
+
+    oneRm: {
+
+        label: "Estimated 1RM (kg)",
+
+        yAxis: "Estimated 1RM (kg)"
+
+    },
+
+    volume: {
+
+        label: "Volume (kg)",
+
+        yAxis: "Volume (kg)"
+
+    }
+
+}
+
 
 const chartValues = computed(() => {
 
@@ -85,21 +148,18 @@ const chartValues = computed(() => {
 
     }
 
+    else if (chartType.value === "volume") {
+      return props.data.map(
+        item => item.volume
+      )
+    }
+
     return props.data.map(
         item => item.estimatedOneRm
     )
 
 })
 
-const yAxisTitle = computed(() => {
-
-    return chartType.value === "weight"
-
-        ? "Weight (kg)"
-
-        : "Estimated 1RM (kg)"
-
-})
 
 const renderChart = async () => {
 
@@ -126,7 +186,7 @@ const renderChart = async () => {
 
       datasets: [
         {
-          label: chartLabel.value,
+          label: chartConfig[chartType.value].label,
           
           data:
           chartValues.value
@@ -174,6 +234,12 @@ const renderChart = async () => {
 
                   }
 
+                  if (chartType.value === "volume") {
+
+                      return `Volume: ${data.volume} kg`
+
+                  }
+
                   return `Estimated 1RM: ${data.estimatedOneRm.toFixed(1)} kg`
                 }
             }
@@ -188,7 +254,7 @@ const renderChart = async () => {
 
           title: {
             display: true,
-            text: yAxisTitle.value
+            text: chartConfig[chartType.value].yAxis
           }
         },
 

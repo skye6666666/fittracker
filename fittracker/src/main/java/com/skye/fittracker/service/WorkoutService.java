@@ -116,12 +116,25 @@ public class WorkoutService {
 
         Map<LocalDate, WorkoutRecord> dailyBest = new LinkedHashMap<>();
 
+        Map<LocalDate, Double> dailyVolume = new LinkedHashMap<>();
+
         for (WorkoutRecord record : records) {
 
             LocalDate date =
                     record.getWorkoutDate();
 
             WorkoutRecord existing = dailyBest.get(date);
+
+            double volume =
+                    record.getWeight()
+                            * record.getReps()
+                            * record.getSets();
+
+            dailyVolume.merge(
+                    date,
+                    volume,
+                    Double::sum
+            );
 
             if (existing == null ||
                     record.getWeight() > existing.getWeight()) {
@@ -140,10 +153,15 @@ public class WorkoutService {
                                     record.getReps()
                             );
 
+                    double volume =
+                            dailyVolume.get(record.getWorkoutDate());
+
+
                     return new ProgressDto(
                             record.getWorkoutDate(),
                             record.getWeight(),
-                            estimatedOneRm
+                            estimatedOneRm,
+                            volume
                     );
 
                 })
