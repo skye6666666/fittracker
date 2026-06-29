@@ -1,0 +1,2 @@
+GET http://localhost:8080/api/workouts/summary/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJTa3llZUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODI3MTExODEsImV4cCI6MTc4MjcxNDc4MX0.V5xH-6rhoaFzEMsKyMf8fqC86E5Ik7HYT5GbjT9KZm0

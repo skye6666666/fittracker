@@ -1,9 +1,6 @@
 package com.skye.fittracker.service;
 
-import com.skye.fittracker.dto.ProgressDto;
-import com.skye.fittracker.dto.WorkoutCreateRequest;
-import com.skye.fittracker.dto.WorkoutResponse;
-import com.skye.fittracker.dto.WorkoutUpdateRequest;
+import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.Exercise;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.entity.WorkoutRecord;
@@ -117,29 +114,47 @@ public class WorkoutService {
                 exerciseId
         );
 
-        Map<LocalDate, Double> dailyMax = new LinkedHashMap<>();
+        Map<LocalDate, WorkoutRecord> dailyBest = new LinkedHashMap<>();
 
         for (WorkoutRecord record : records) {
 
             LocalDate date =
                     record.getWorkoutDate();
 
-            dailyMax.merge(
-                    date,
-                    record.getWeight(),
-                    Math::max
-            );
+            WorkoutRecord existing = dailyBest.get(date);
+
+            if (existing == null ||
+                    record.getWeight() > existing.getWeight()) {
+
+                dailyBest.put(date, record);
+            }
         }
 
-        return dailyMax.entrySet()
+        return dailyBest.values()
                 .stream()
-                .map(entry ->
-                        new ProgressDto(
-                                entry.getKey(),
-                                entry.getValue()
-                        )
-                )
+                .map(record -> {
+
+                    double estimatedOneRm =
+                            calculateEstimatedOneRm(
+                                    record.getWeight(),
+                                    record.getReps()
+                            );
+
+                    return new ProgressDto(
+                            record.getWorkoutDate(),
+                            record.getWeight(),
+                            estimatedOneRm
+                    );
+
+                })
                 .toList();
+    }
+
+    private double calculateEstimatedOneRm(
+            double weight,
+            int reps
+    ) {
+        return weight * (1 + reps / 30.0);
     }
 
     private WorkoutResponse toResponse(WorkoutRecord record) {
@@ -217,5 +232,74 @@ public class WorkoutService {
                 )
                 .map(this::toResponse)
                 .toList();
+    }
+
+
+    public ProgressSummaryResponse getProgressSummary(
+            Long userId,
+            Long exerciseId
+    ) {
+
+        List<WorkoutRecord> latestRecords =
+                workoutRepo.findLatestWorkout(
+                        userId,
+                        exerciseId
+                );
+
+        WorkoutRecord latest = latestRecords.get(0);
+
+        Double currentWeight = latest.getWeight();
+        LocalDate currentWorkoutDate = latest.getWorkoutDate();
+
+        Double bestWeight =
+                workoutRepo.findBestRecord(
+                        userId,
+                        exerciseId
+                ).get(0).getWeight();
+
+        LocalDate bestWeightDate =
+                workoutRepo.findBestRecord(
+                userId,
+                exerciseId
+                 ).get(0).getWorkoutDate();
+
+        Double currentOneRm =
+                calculateOneRm(
+                        latest.getWeight(),
+                        latest.getReps()
+                );
+
+        Double bestOneRm =
+                workoutRepo
+                        .findByUserIdAndExerciseId(
+                                userId,
+                                exerciseId
+                        )
+                        .stream()
+                        .mapToDouble(record ->
+                                calculateOneRm(
+                                        record.getWeight(),
+                                        record.getReps()
+                                )
+                        )
+                        .max()
+                        .orElse(0);
+
+        return new ProgressSummaryResponse(
+                currentWeight,
+                bestWeight,
+                currentOneRm,
+                bestOneRm,
+                bestWeightDate,
+                currentWorkoutDate
+
+        );
+    }
+
+    private double calculateOneRm(
+            Double weight,
+            Integer reps
+    ) {
+        return weight * (1 + reps / 30.0);
     }
 }

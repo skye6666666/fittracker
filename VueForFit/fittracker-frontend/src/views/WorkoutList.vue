@@ -323,7 +323,7 @@
             >
             {{ successMessage2 }}
         </div>
-        
+
         <div class="card shadow-sm">
             <div class="card-body p-0">
 
@@ -578,6 +578,77 @@
 
         </select>
 
+        <!-- <div v-if="summary">
+
+            <h4>Progress Summary</h4>
+
+            <p>
+                Current Weight:
+                {{ summary.currentWeight }} kg
+            </p>
+
+            <p>
+                Best PR:
+                {{ summary.bestWeight }} kg
+            </p>
+
+            <p>
+                Current 1RM:
+                {{ summary.currentOneRm.toFixed(1) }} kg
+            </p>
+
+            <p>
+                Best 1RM:
+                {{ summary.bestOneRm.toFixed(1) }} kg
+            </p>
+
+        </div> -->
+
+        <div class="row g-3 mb-4" v-if="summary">
+            <!-- <h4 class="mb-3">
+                Summary
+            </h4> -->
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Latest Lift</div>
+                    <h3>{{  summary.currentWeight }} kg</h3>
+                    {{ summary.currentWorkoutDate }}
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Best PR</div>
+                    <h3>{{ summary.bestWeight }} kg</h3>
+                    {{ summary.bestWeightDate }}
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Latest Estimated 1RM</div>
+                    <h3>{{ summary.currentOneRm.toFixed(1) }} kg</h3>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted">Best Estimated 1RM</div>
+                    <h3>{{ summary.bestOneRm.toFixed(1) }} kg</h3>
+                </div>
+                </div>
+            </div>
+
+        </div>
+
         <ProgressChart
         :data="progressData"
         />
@@ -673,6 +744,7 @@ const errorMessage = ref("")
 const successMessage = ref("")
 const errorMessage2 = ref("")
 const successMessage2 = ref("")
+const summary = ref(null)
 
 // 'today' | 'muscle' | 'progress'
 // 已被selectTab取代
@@ -1246,12 +1318,24 @@ const goToProfile = () => {
 
 }
 
+const loadSummary = async () => {
+  const response =
+    await http.get(`/workouts/summary/${selectedExerciseId.value}`)
+
+  summary.value = response.data
+}
 
 
-watch(
-  selectedExerciseId,
-  loadProgress,
-)
+// watch(
+//   selectedExerciseId,
+//   loadProgress,
+// )
+
+watch(selectedExerciseId, async () => {
+  await loadProgress()
+  await loadSummary()
+  
+})
 
 watch(selectedTab, async () => {
   await Promise.all([loadWeeklyWorkouts(), loadProgress()])

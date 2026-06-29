@@ -1,11 +1,34 @@
 <template>
+  <div class="d-flex justify-content-center mb-3">
+
+    <label class="form-label mt-2 me-3">
+        Chart Type
+    </label>
+
+    <select
+        class="form-select"
+        style="max-width:250px"
+        v-model="chartType">
+
+        <option value="weight">
+            Weight
+        </option>
+
+        <option value="oneRm">
+            Estimated 1RM
+        </option>
+
+    </select>
+
+  </div>
+
   <div style="height: 400px;">
     <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onMounted } from 'vue'
+import { ref, watch, nextTick, onMounted, computed  } from 'vue'
 import {
   Chart,
   LineController,
@@ -40,6 +63,44 @@ const chartCanvas = ref(null)
 
 let chartInstance = null
 
+const chartType = ref("weight")
+
+const chartLabel = computed(() => {
+
+    return chartType.value === "weight"
+
+        ? "Weight (kg)"
+
+        : "Estimated 1RM (kg)"
+
+})
+
+const chartValues = computed(() => {
+
+    if (chartType.value === "weight") {
+
+        return props.data.map(
+            item => item.weight
+        )
+
+    }
+
+    return props.data.map(
+        item => item.estimatedOneRm
+    )
+
+})
+
+const yAxisTitle = computed(() => {
+
+    return chartType.value === "weight"
+
+        ? "Weight (kg)"
+
+        : "Estimated 1RM (kg)"
+
+})
+
 const renderChart = async () => {
 
   await nextTick()
@@ -65,11 +126,11 @@ const renderChart = async () => {
 
       datasets: [
         {
-          label: 'Weight (kg)',
-
-          data: props.data.map(
-            item => item.weight
-          ),
+          label: chartLabel.value,
+          
+          data:
+          chartValues.value
+          ,
 
           borderColor: '#198754',
           pointBackgroundColor: '#198754',
@@ -96,21 +157,24 @@ const renderChart = async () => {
 
       plugins: {
 
-        title: {
-          display: true,
-          text: 'Exercise Progress'
-        },
+        // title: {
+        //   display: true,
+        //   text: 'Exercise Progress'
+        // },
 
         tooltip: {
             callbacks: {
                 label: function(context) {
 
-                const data =
-                    props.data[
-                    context.dataIndex
-                    ]
+                  const data = props.data[context.dataIndex]
 
-                return `Weight: ${data.weight} kg`
+                  if (chartType.value === "weight") {
+
+                      return `Weight: ${data.weight} kg`
+
+                  }
+
+                  return `Estimated 1RM: ${data.estimatedOneRm.toFixed(1)} kg`
                 }
             }
         }
@@ -124,7 +188,7 @@ const renderChart = async () => {
 
           title: {
             display: true,
-            text: 'Weight (kg)'
+            text: yAxisTitle.value
           }
         },
 
@@ -151,4 +215,10 @@ watch(
   },
   { deep: true }
 )
+
+watch(chartType, () => {
+
+    renderChart()
+
+})
 </script>

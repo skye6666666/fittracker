@@ -1,9 +1,6 @@
 package com.skye.fittracker.controller;
 
-import com.skye.fittracker.dto.ProgressDto;
-import com.skye.fittracker.dto.WorkoutCreateRequest;
-import com.skye.fittracker.dto.WorkoutResponse;
-import com.skye.fittracker.dto.WorkoutUpdateRequest;
+import com.skye.fittracker.dto.*;
 import com.skye.fittracker.entity.User;
 import com.skye.fittracker.entity.WorkoutRecord;
 import com.skye.fittracker.service.WorkoutService;
@@ -102,6 +99,18 @@ public class WorkoutController {
     ) {
         return workoutService.getWeeklyWorkouts(
                 user.getId()
+        );
+    }
+
+    @GetMapping("/summary/{exerciseId}")
+    public ProgressSummaryResponse getProgressSummary(
+            @PathVariable Long exerciseId,
+            @AuthenticationPrincipal User user
+    ) {
+
+        return workoutService.getProgressSummary(
+                user.getId(),
+                exerciseId
         );
     }
 }
