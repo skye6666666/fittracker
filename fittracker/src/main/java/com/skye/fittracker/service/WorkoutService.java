@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -231,15 +232,19 @@ public class WorkoutService {
     }
 
     public List<WorkoutResponse> getWeeklyWorkouts(
-            Long userId
+            Long userId,
+            LocalDate date
     ) {
 
-        LocalDate today = LocalDate.now();
+        //LocalDate today = LocalDate.now();
 
         LocalDate startOfWeek =
-                today.minusDays(
-                        today.getDayOfWeek().getValue() - 1
+                date.minusDays(
+                        date.getDayOfWeek().getValue() - 1
                 );
+
+        LocalDate endOfWeek =
+                startOfWeek.plusDays(6);
 
         return workoutRepo
                 .findByUserId(userId)
@@ -248,6 +253,9 @@ public class WorkoutService {
                         !workout.getWorkoutDate()
                                 .isBefore(startOfWeek)
                 )
+                .filter(workout ->
+                        !workout.getWorkoutDate()
+                                .isAfter(endOfWeek))
                 .map(this::toResponse)
                 .toList();
     }

@@ -95,10 +95,12 @@ public class WorkoutController {
 
     @GetMapping("/week")
     public List<WorkoutResponse> getWeeklyWorkouts(
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal User user,
+            @RequestParam LocalDate date
     ) {
         return workoutService.getWeeklyWorkouts(
-                user.getId()
+                user.getId(),
+                date
         );
     }
 

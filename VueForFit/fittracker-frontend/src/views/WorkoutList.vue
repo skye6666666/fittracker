@@ -1120,11 +1120,13 @@ const goToExerciseManagement = () => {
 
 const loadWeeklyWorkouts = async () => {
 
-  const response =
-    await http.get("/workouts/week")
+    const response = await http.get("/workouts/week", {
+        params: {
+        date: selectedDate.value
+        }
+    })
 
-  weeklyWorkouts.value =
-    response.data
+    weeklyWorkouts.value = response.data
 }
 
 const weeklyVolume = computed(() => {
@@ -1348,10 +1350,10 @@ onMounted(() => {
   loadWeeklyWorkouts()
 });
 
-watch(selectedDate, () => {
-  loadWorkouts();
-});
-
+watch(selectedDate, async () => {
+  await loadWorkouts()
+  await loadWeeklyWorkouts()
+})
 
 
 
