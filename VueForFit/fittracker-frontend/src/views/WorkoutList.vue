@@ -905,7 +905,15 @@ const deleteWorkout = async (id) => {
         `/workouts/${id}`
     )
 
-    alert("刪除成功")
+    // alert("刪除成功")
+    successMessage.value =
+        "Workout deleted successfully"
+
+    errorMessage.value = ""
+
+    setTimeout(() => {
+    successMessage.value = ""
+    }, 3000)
 
     await loadWorkouts()
 
@@ -1085,11 +1093,11 @@ const chartData = computed(() =>
   }))
 )
 
-const topMuscle = computed(() => {
-  if (!muscleGroupSummary.value.length) return "-"
+// const topMuscle = computed(() => {
+//   if (!muscleGroupSummary.value.length) return "-"
 
-  return muscleGroupSummary.value[0][0]
-})
+//   return muscleGroupSummary.value[0][0]
+// })
 
 const loadProgress = async () => {
 
@@ -1271,18 +1279,18 @@ const weeklyMuscleSummary = computed(() => {
 //   console.log(weeklyMuscleSummary.value)
 // })
 
-const highestVolumeDay = computed(() => {
+// const highestVolumeDay = computed(() => {
 
-  return Object.entries(
-    weeklyVolumeByDay.value
-  ).reduce(
-    (max, current) =>
-      current[1] > max[1]
-        ? current
-        : max
-  )[0]
+//   return Object.entries(
+//     weeklyVolumeByDay.value
+//   ).reduce(
+//     (max, current) =>
+//       current[1] > max[1]
+//         ? current
+//         : max
+//   )[0]
 
-})
+// })
 
 //計算不重複動作數
 const exerciseCount = computed(() => {
