@@ -41,19 +41,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import http from "../api/http.js";
 import { useRouter } from "vue-router"
+import axios from "axios";
+import type { RegisterRequest } from "../types/auth";
 
 
-const username = ref('')
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
+const username = ref<string>('')
+const email = ref<string>('')
+const password = ref<string>('')
+const confirmPassword = ref<string>('')
 const router = useRouter()
 
-const register = async () => {
+const register = async (): Promise<void> => {
 
     try {
 
@@ -62,13 +64,14 @@ const register = async () => {
         return
         }
 
-        await http.post(
-            "/users/register",
-            {
+        const payload: RegisterRequest = {
             username: username.value,
             email: email.value,
             password: password.value
-            }
+        }
+
+        await http.post<void>(
+            "/users/register",payload
         )
         
 
@@ -76,12 +79,16 @@ const register = async () => {
 
         router.push('/login')
     }catch(error){
-        alert(error.response?.data || '註冊失敗')
+        if(axios.isAxiosError(error)){
+            alert(error.response?.data || '註冊失敗')
+        } else{
+            alert("發生未知錯誤")
+        }
         
     }
 }
 
-const cancelRegister = () => {
+const cancelRegister = (): void => {
 
     router.push(
     "/login"

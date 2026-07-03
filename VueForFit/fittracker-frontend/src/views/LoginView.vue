@@ -25,29 +25,31 @@
   </div>
 </template>
 
-<script setup>
+
+<script setup lang="ts">
 import { ref } from "vue";
 import http from "../api/http";
 import { useRouter } from "vue-router"
-import { parseJwt } from "../utils/auth.js"
-import Register from "./Register.vue";
+import type { LoginRequest, LoginResponse } from "../types/auth";
+import axios from "axios"
 
 const router = useRouter()
 
-const email = ref("");
-const password = ref("");
-const loading = ref(false)
-const role = ref("");
+const email = ref<string>("");
+const password = ref<string>("");
+const loading = ref<boolean>(false)
+const role = ref<string>("");
 
-
-const login = async () => {
+const login = async (): Promise<void> => {
   try {
     loading.value = true;
 
-    const response = await http.post("/users/login", {
+    const payload: LoginRequest = {
       email: email.value,
       password: password.value,
-    });
+    }
+
+    const response = await http.post<LoginResponse>("/users/login", payload);
 
     localStorage.setItem(
       "token",
@@ -59,29 +61,22 @@ const login = async () => {
     email.value
     );
 
-    // const user = parseJwt(response.data.token)
-    // role.value = user?.role || "UNKNOWN"
-
-    // localStorage.setItem(
-    //   "role",
-    //   role.value
-    // );
-
-    //alert("登入成功");
-
     console.log(response.data);
-    //alert("準備跳轉")
-    //router.push("/workouts")
+
     if (response.data.token) {
         router.push("/workouts")
     }
-    //alert("已執行 router.push")
+
 
   } catch (error) {
 
     console.error(error);
 
-    alert(error.response?.data?.message || "登入失敗");
+    if (axios.isAxiosError(error)) {
+      alert(error.response?.data?.message || "登入失敗")
+    } else {
+      alert("發生未知錯誤")
+    }
 
   } finally{
     loading.value = false;
