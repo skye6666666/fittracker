@@ -20,4 +20,6 @@ public class ProgressSummaryResponse {
     private LocalDate bestWeightDate;
 
     private LocalDate currentWorkoutDate;
+
+    private LocalDate bestOneRmDate;
 }

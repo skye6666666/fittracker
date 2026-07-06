@@ -643,6 +643,7 @@
                 <div class="card-body text-center">
                     <div class="text-muted">Best Estimated 1RM</div>
                     <h3>{{ summary.bestOneRm.toFixed(1) }} kg</h3>
+                    {{summary.bestOneRmDate}}
                 </div>
                 </div>
             </div>

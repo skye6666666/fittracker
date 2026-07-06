@@ -11,12 +11,7 @@ import com.skye.fittracker.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class WorkoutService {
@@ -101,72 +96,84 @@ public class WorkoutService {
 
     public List<ProgressDto> getWorkoutProgess(Long userId, Long exerciseId) {
 
-//        return workoutRepo
-//                .findByUserIdAndExerciseIdOrderByWorkoutDateAsc(userId, exerciseId)
-//                .stream()
-//                .map(record ->
-//                        new ProgressDto(
-//                                record.getWorkoutDate(),
-//                                record.getWeight())
-//                )
-//                .toList();
         List<WorkoutRecord> records = workoutRepo.findByUserIdAndExerciseIdOrderByWorkoutDateAsc(
                 userId,
                 exerciseId
         );
 
-        Map<LocalDate, WorkoutRecord> dailyBest = new LinkedHashMap<>();
+        Map<LocalDate, DailyProgressSummary> summaryMap =
+                buildDailyProgressSummary(records);
 
-        Map<LocalDate, Double> dailyVolume = new LinkedHashMap<>();
+
+        return summaryMap.values()
+                .stream()
+                .map(summary ->
+                        new ProgressDto(
+                                summary.getWorkoutDate(),
+                                summary.getMaxWeight(),
+                                summary.getBestEstimatedOneRm(),
+                                summary.getVolume()
+                        )
+                )
+                .toList();
+    }
+
+    private Map<LocalDate, DailyProgressSummary>
+    buildDailyProgressSummary(
+            List<WorkoutRecord> records
+    ) {
+        Map<LocalDate, DailyProgressSummary> summaryMap =
+                new LinkedHashMap<>();
 
         for (WorkoutRecord record : records) {
 
             LocalDate date =
                     record.getWorkoutDate();
 
-            WorkoutRecord existing = dailyBest.get(date);
+            DailyProgressSummary summary =
+                    summaryMap.get(date);
+
+            if (summary == null) {
+
+                summary = new DailyProgressSummary();
+                summary.setWorkoutDate(date);
+                summaryMap.put(date, summary);
+
+            }
 
             double volume =
                     record.getWeight()
                             * record.getReps()
                             * record.getSets();
 
-            dailyVolume.merge(
-                    date,
-                    volume,
-                    Double::sum
+            summary.setVolume(
+                    summary.getVolume() + volume
             );
 
-            if (existing == null ||
-                    record.getWeight() > existing.getWeight()) {
 
-                dailyBest.put(date, record);
+            if (record.getWeight() > summary.getMaxWeight()) {
+
+                summary.setMaxWeight(
+                        record.getWeight()
+                );
+
             }
-        }
 
-        return dailyBest.values()
-                .stream()
-                .map(record -> {
-
-                    double estimatedOneRm =
-                            calculateEstimatedOneRm(
-                                    record.getWeight(),
-                                    record.getReps()
-                            );
-
-                    double volume =
-                            dailyVolume.get(record.getWorkoutDate());
-
-
-                    return new ProgressDto(
-                            record.getWorkoutDate(),
+            double estimatedOneRm =
+                    calculateEstimatedOneRm(
                             record.getWeight(),
-                            estimatedOneRm,
-                            volume
+                            record.getReps()
                     );
 
-                })
-                .toList();
+            if (estimatedOneRm > summary.getBestEstimatedOneRm()) {
+
+                summary.setBestEstimatedOneRm(
+                        estimatedOneRm
+                );
+
+            }
+        }
+        return summaryMap;
     }
 
     private double calculateEstimatedOneRm(
@@ -265,51 +272,63 @@ public class WorkoutService {
             Long userId,
             Long exerciseId
     ) {
-
-        List<WorkoutRecord> latestRecords =
-                workoutRepo.findLatestWorkout(
+        List<WorkoutRecord> records =
+                workoutRepo.findByUserIdAndExerciseIdOrderByWorkoutDateAsc(
                         userId,
                         exerciseId
                 );
 
-        WorkoutRecord latest = latestRecords.get(0);
+        Map<LocalDate, DailyProgressSummary> summaryMap =
+                buildDailyProgressSummary(records);
 
-        Double currentWeight = latest.getWeight();
-        LocalDate currentWorkoutDate = latest.getWorkoutDate();
+        DailyProgressSummary latestSummary =
+                summaryMap.values()
+                        .stream()
+                        .max(Comparator.comparing(
+                                DailyProgressSummary::getWorkoutDate
+                        ))
+                        .orElseThrow();
 
-        Double bestWeight =
-                workoutRepo.findBestRecord(
-                        userId,
-                        exerciseId
-                ).get(0).getWeight();
-
-        LocalDate bestWeightDate =
-                workoutRepo.findBestRecord(
-                userId,
-                exerciseId
-                 ).get(0).getWorkoutDate();
+        Double currentWeight =
+                latestSummary.getMaxWeight();
 
         Double currentOneRm =
-                calculateOneRm(
-                        latest.getWeight(),
-                        latest.getReps()
-                );
+                latestSummary.getBestEstimatedOneRm();
+
+        LocalDate currentWorkoutDate =
+                latestSummary.getWorkoutDate();
+
+        DailyProgressSummary bestWeightSummary =
+                summaryMap.values()
+                        .stream()
+                        .max(
+                                Comparator.comparing(DailyProgressSummary::getMaxWeight)
+                                        .thenComparing(DailyProgressSummary::getWorkoutDate)
+                        )
+                        .orElseThrow();
+
+        Double bestWeight =
+                bestWeightSummary.getMaxWeight();
+
+        LocalDate bestWeightDate =
+                bestWeightSummary.getWorkoutDate();
+
+
+        DailyProgressSummary bestOneRmSummary =
+                summaryMap.values()
+                        .stream()
+                        .max(
+                                Comparator.comparing(DailyProgressSummary::getBestEstimatedOneRm)
+                                        .thenComparing(DailyProgressSummary::getWorkoutDate)
+                        )
+                        .orElseThrow();
 
         Double bestOneRm =
-                workoutRepo
-                        .findByUserIdAndExerciseId(
-                                userId,
-                                exerciseId
-                        )
-                        .stream()
-                        .mapToDouble(record ->
-                                calculateOneRm(
-                                        record.getWeight(),
-                                        record.getReps()
-                                )
-                        )
-                        .max()
-                        .orElse(0);
+                bestOneRmSummary.getBestEstimatedOneRm();
+
+        LocalDate bestOneRmDate =
+                bestOneRmSummary.getWorkoutDate();
+
 
         return new ProgressSummaryResponse(
                 currentWeight,
@@ -317,7 +336,8 @@ public class WorkoutService {
                 currentOneRm,
                 bestOneRm,
                 bestWeightDate,
-                currentWorkoutDate
+                currentWorkoutDate,
+                bestOneRmDate
 
         );
     }

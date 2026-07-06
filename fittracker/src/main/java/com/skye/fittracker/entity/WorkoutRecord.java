@@ -34,4 +34,14 @@ public class WorkoutRecord {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Override
+    public String toString() {
+        return "WorkoutRecord{" +
+                "date=" + workoutDate +
+                ", weight=" + weight +
+                ", reps=" + reps +
+                ", sets=" + sets +
+        '}';
+    }
+
 }
