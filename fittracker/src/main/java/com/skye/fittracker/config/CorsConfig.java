@@ -18,7 +18,7 @@ public class CorsConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173","https://fittracker-9sb7.vercel.app")
+                List.of("http://localhost:5173","https://fittracker-9sb7.vercel.app","http://localhost:3000","https://fittracker-r3fo.vercel.app")
         );
 
         configuration.setAllowedMethods(
